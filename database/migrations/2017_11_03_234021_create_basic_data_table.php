@@ -25,8 +25,6 @@ class CreateBasicDataTable extends Migration
             $table->enum('user_type',['INTERNAL','EXTERNAL']);
             $table->date('finalization_soat');
             $table->string('data_privacy')->nullable();
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
             $table->integer('brand_id')->unsigned();
             $table->foreign('brand_id')->references('id')->on('brands');
             $table->integer('service_id')->unsigned();

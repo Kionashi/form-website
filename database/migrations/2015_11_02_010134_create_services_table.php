@@ -13,13 +13,11 @@ class CreateServicesTable extends Migration
      */
     public function up()
     {
-        Schema::create('services', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->enum('status',['APPROVED','REJECTED','WAITING']);
-            $table->string('reject_reasons');
-            $table->timestamps();
-        });
+        // Schema::create('services', function (Blueprint $table) {
+        //     $table->increments('id');
+        //     $table->string('name');
+        //     $table->timestamps();
+        // });
     }
 
     /**
@@ -29,6 +27,6 @@ class CreateServicesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('services');
+        // Schema::dropIfExists('services');
     }
 }

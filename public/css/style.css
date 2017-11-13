@@ -1,0 +1,47 @@
+.green{
+	color: green;
+}
+
+.red{
+	color:red;
+}
+
+.clear-bg {
+	background-color: #ededed;
+}
+
+.rounded {
+	border-radius: 1%;
+}
+
+.padding-2 {
+	padding: 2%;
+}
+
+.padding-left-0 {
+	padding-left: 0%;
+}
+
+.padding-right-0 {
+	padding-right: 0%;
+}
+
+.padding-top-1 {
+	padding-top: 1%;
+}
+
+.padding-top-4 {
+	padding-top: 4em;
+}
+
+.margin-2{
+	margin:2%;
+}
+
+.margin-top-1 {
+	margin-top: 1em;
+}
+.padding-left-right-1 {
+	padding-right: 1em !important;
+	padding-left: 1em !important;
+}
