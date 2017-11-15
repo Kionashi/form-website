@@ -1,7 +1,7 @@
 @extends('layouts.frontend.master.index')
 @section('content')
 	<div class="rounded clear-bg padding-2">
-		<h3 align="center">Datos Basicos</h3>
+		<h3 align="center">Datos B&aacute;sicos</h3>
 		@if ($errors->any())
 		    <div class="alert alert-danger">
 		        <ul>
@@ -69,7 +69,7 @@
 					<div class="col-md-12">
 						
 						<div class="col-md-4 padding-top-1">
-							<a class="btn btn-primary btn-block" href="{{route('request/return/',$serviceRequestId)}}">Regresar</a>
+							<a class="btn btn-primary btn-block" href="{{route('/')}}">Regresar</a>
 						</div>
 						<div class="col-md-4 padding-top-1">
 							<a class="btn btn-warning btn-block" href="#">Pago Online</a>

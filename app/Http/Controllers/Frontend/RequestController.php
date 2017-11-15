@@ -9,6 +9,8 @@ use Auth;
 use App\Brand;
 use App\Service;
 use App\BasicData;
+use App\ComplementaryData;
+use App\Recording;
 use File;
 use Storage;
 
@@ -31,8 +33,39 @@ class RequestController extends AppController
 		'userType'			=> 'required',
 		'serviceId'			=> 'required',
 		'model'				=> 'required|numeric',
-		'finalizationSoat'	=> 'required'
+		'finalizationSoat'	=> 'required',
+		'dataPrivacy'		=> 'required'
 	];
+	protected $complementaryDataValidationRules=[
+		'turn' 				=> 'required',
+		'brandId' 			=> 'required',
+		'line'				=> 'required',
+		'cylinders' 		=> 'required',
+		'serviceId' 		=> 'required',
+		'bodywork'			=> 'required',
+		'bodyworkType'		=> 'required',
+		'fuelType'			=> 'required',
+		'capacity'			=> 'required',
+		'model'				=> 'required|numeric',
+		'color'				=> 'required',
+		'newColor'			=> 'required',
+		'importDeclaration'	=> 'required',
+		'engineNumber'		=> 'required',
+		'serialNumber'		=> 'required',
+		'chassisNumber'		=> 'required',
+		'importDate'		=> 'required',
+		'plateDate'			=> 'required',
+		'observation'		=> 'required',
+		'headquarters'		=> 'required',
+		'requestedBy'		=> 'required',
+		'insured'			=> 'required',
+		'intermediary'		=> 'required',
+		'mainImage'			=> 'required',
+		'secondaryImage'	=> 'required'
+		
+		
+	];
+
 
     public function start (Request $request) {
     	
@@ -54,25 +87,23 @@ class RequestController extends AppController
     	
     }
     
-    //With the service ID and the current step will return the route to the next step  
+    //With the service request and the current step will show the view from the next step  
     public function goNextStep ($serviceRequest,$currentStep) {
     	switch ($serviceRequest->service_id) {
     		//Regrabación
     		case 1:
     			switch ($currentStep) {
-    				case -1:
-    					return redirect()->route('/');
-    					break;
+    				
     				case 0:
-    					$page = $this->goBasicData($serviceRequest);
+    					return redirect()->route('request/basic-data/',$serviceRequest->id);
     					break;
     				
     				case 1:
-    					$page = $this->goComplementaryData($serviceRequest);
+    					return redirect()->route('request/complementary-data/',$serviceRequest->id);
     					break;
     				
     				case 2:
-    					$page = 'pages.frontend.forms.recording';
+    					return redirect()->route('request/recording/',$serviceRequest->id);
     					break;
     				
     				case 3:
@@ -91,15 +122,13 @@ class RequestController extends AppController
     		//Avaluó Comercial
     		case 2:
     			switch ($currentStep) {
-    				case -1:
-    					return redirect()->route('/');
-    					break;
+    				
     				case 0:
-    					$this->goBasicData($serviceRequest);
+    					return redirect()->route('request/basic-data/',$serviceRequest->id);
     					break;
     				
     				case 1:
-    					$page = $this->goComplementaryData($serviceRequest);
+    					return redirect()->route('request/complementary-data/',$serviceRequest->id);
     					break;
     				
     				case 2:
@@ -125,15 +154,13 @@ class RequestController extends AppController
     		//RTC
     		case 3:
     			switch ($currentStep) {
-    				case -1:
-    					return redirect()->route('/');
-    					break;
+    				
     				case 0:
-    					$page = $this->goBasicData($serviceRequest);
+    					return redirect()->route('request/basic-data/',$serviceRequest->id);
     					break;
     				
     				case 1:
-    					$page = $this->goComplementaryData($serviceRequest);
+    					return redirect()->route('request/complementary-data/',$serviceRequest->id);
     					break;
     				
     				case 2:
@@ -149,22 +176,20 @@ class RequestController extends AppController
     					break;
     				
     				default:
-    					$page = null;
+    					return redirect()->route('/');
     					break;
     			}
     			break;
     		//Avaluó sin RTC
     		case 4:
     			switch ($currentStep) {
-    				case -1:
-    					return redirect()->route('/');
-    					break;
+    				
     				case 0:
-    					$page = $this->goBasicData($serviceRequest);
+    					return redirect()->route('request/basic-data/',$serviceRequest->id);
     					break;
     				
     				case 1:
-    					$page = $this->goComplementaryData($serviceRequest);
+    					return redirect()->route('request/complementary-data/',$serviceRequest->id);
     					break;
     				
     				case 2:
@@ -180,26 +205,33 @@ class RequestController extends AppController
     					break;
     				
     				default:
-    					$page = null;
+    					return redirect()->route('/');
     					break;
     			}
     			break;
     		default:
-    			$page = null;
+    			return redirect()->route('/');
     			break;
     	}
     	
     	return $page;
     }
     
-    public function goBasicData ($serviceRequest) {
+    
+    public function goBasicData ($serviceRequestId) {
+    	// Find service request
+    	$serviceRequest = ServiceRequest::with('basicData')->find($serviceRequestId);
     	
+    	// Find brands
     	$brands = Brand::all()
     		->pluck('name','id')
     		;
+    	// Find services
     	$services = Service::all()
     		->pluck('name','id')
     		;
+    		
+    	// Get all years from 1950 to current year + 1
     	$nextYear = date('Y') + 1;
     	$models = array();
     	for($i = 1950; $i <= $nextYear; $i++) {
@@ -209,6 +241,7 @@ class RequestController extends AppController
     	$userTypes = array();
     	$userTypes = ['INTERNAL'=> 'Interno', 'EXTERNAL'=>'Externo'];
     	
+    	// Render view
     	return view('pages.frontend.forms.basic-data')
     		->with('brands',$brands)
     		->with('services',$services)
@@ -220,7 +253,10 @@ class RequestController extends AppController
     	
     }
     
-    public function goComplementaryData($serviceRequest) {
+    public function goComplementaryData($serviceRequestId) {
+    	
+    	// Find service request
+    	$serviceRequest = ServiceRequest::with('complementaryData')->find($serviceRequestId);
     	
     	$brands = Brand::all()
     		->pluck('name','id')
@@ -243,11 +279,45 @@ class RequestController extends AppController
     		;
     }
     
-    public function basicData (Request $request) {
+    public function goRecording (Request $request, $serviceRequestId) {
+    	// Find service request
+    	$serviceRequest = ServiceRequest::with('recording')->find($serviceRequestId);
+    	
+    	// Find brands
+    	$brands = Brand::all()
+    		->pluck('name','id')
+    		;
+    	// Find services
+    	$services = Service::all()
+    		->pluck('name','id')
+    		;
+    		
+    	// Get all years from 1950 to current year + 1
+    	$nextYear = date('Y') + 1;
+    	$models = array();
+    	for($i = 1950; $i <= $nextYear; $i++) {
+    		$models[] = $i;
+    	}
+    	
+    	$userTypes = array();
+    	$userTypes = ['INTERNAL'=> 'Interno', 'EXTERNAL'=>'Externo'];
+    	
+    	// Render view
+    	return view('pages.frontend.forms.basic-data')
+    		->with('brands',$brands)
+    		->with('services',$services)
+    		->with('userTypes',$userTypes)
+    		->with('models',$models)
+    		->with('serviceId',$serviceRequest->service_id)
+    		->with('serviceRequestId',$serviceRequest->id)
+    		;
+    	
+    }
+    
+    public function processBasicData (Request $request) {
     	
     	//Validation
-    	// $this->validate($request, $this->basicDataValidationRules);
-    	// echo ('exito');die;
+    	$this->validate($request, $this->basicDataValidationRules);
     	
     	//Getting the data from the forms
     	$plate = $request->input('plate');
@@ -305,6 +375,89 @@ class RequestController extends AppController
         
     }
     
+    public function processComplementaryData(Request $request){
+    	
+    	// echo('123');die;
+    	$this->validate($request, $this->complementaryDataValidationRules);
+    	
+    	$serviceRequestId = $request->input('serviceRequestId');
+    	$turn = $request->input('turn');
+    	$brandId = $request->input('brandId');
+    	$line = $request->input('line');
+    	$cylinders = $request->input('cylinders');
+    	$serviceId = $request->input('serviceId');
+    	$bodywork = $request->input('bodywork');
+    	$bodyworkType = $request->input('bodyworkType');
+    	$fuelType = $request->input('fuelType');
+    	$capacity = $request->input('capacity');
+    	$model = $request->input('model');
+    	$color = $request->input('color');
+    	$newColor = $request->input('newColor');
+    	$importDeclaration = $request->input('importDeclaration');
+    	$engineNumber = $request->input('engineNumber');
+    	$serialNumber = $request->input('serialNumber');
+    	$chassisNumber = $request->input('chassisNumber');
+    	$importDate = $request->input('importDate');
+    	$plateDate = $request->input('plateDate');
+    	$observation = $request->input('observation');
+    	$headquarters = $request->input('headquarters');
+    	$requestedBy = $request->input('requestedBy');
+    	$insured = $request->input('insured');
+    	$intermediary = $request->input('intermediary');
+    	$mainImage = $request->input('mainImage');
+    	$secondaryImage = $request->input('secondaryImage');
+    	
+    	//Finding if there is already a complementary data related to the service request
+    	$complementaryData = ComplementaryData::find($serviceRequest->basic_data_id);
+    	
+    	if (!$complementaryData) {
+	
+	    	$complementaryData = new ComplementaryData();
+		}
+		
+    	$complementaryData->turn = $turn;
+    	$complementaryData->brand_id = $brandId;
+    	$complementaryData->line = $line;
+    	$complementaryData->cylinders = $cylinders;
+    	$complementaryData->service_id = $serviceId;
+    	$complementaryData->bodywork = $bodywork;
+    	$complementaryData->bodywork_type = $bodyworkType;
+    	$complementaryData->fuel_type = $fuelType;
+    	$complementaryData->capacity = $capacity;
+    	$complementaryData->model = $model;
+    	$complementaryData->color = $color;
+    	$complementaryData->new_color = $newColor;
+    	$complementaryData->import_declaration = $importDeclaration;
+    	$complementaryData->engine_number = $engineNumber;
+    	$complementaryData->serial_number = $serialNumber;
+    	$complementaryData->chassis_number = $chassisNumber;
+    	$complementaryData->import_date = $importDate;
+    	$complementaryData->platedate = $plateDate;
+    	$complementaryData->observation = $observation;
+    	$complementaryData->headquarters = $headquarters;
+    	$complementaryData->requested_by = $requestedBy;
+    	$complementaryData->insured = $insured;
+    	$complementaryData->intermediary = $intermediary;
+    	$complementaryData->main_image = $mainImage;
+    	$complementaryData->secondary_image = $secondaryImage;
+    	
+    	$complementaryData->save();
+    	
+    	$primaryFileName = $complementaryData->id."primary".".".$extension;
+    	$destinationPath = 'complementary-data';
+    	$primaryPath = $dataPrivacy->move($destinationPath,$primaryFileName);
+    	
+    	$secondaryFileName = $complementaryData->id."secondary".".".$extension;
+    	$destinationPath = 'complementary-data';
+    	$path = $dataPrivacy->move($destinationPath,$fileName);
+    	
+    	$serviceRequest->complementary_data_id = $complementaryData->id;
+		$serviceRequest->last_step = 2;
+		$serviceRequest->save();
+    	
+    	return $goNextStep($serviveRequest,2);
+    }
+    
     public function return ($serviceRequestId) {
     	
     	$serviceRequest = ServiceRequest::find($serviceRequestId);
@@ -321,13 +474,13 @@ class RequestController extends AppController
     		case 1:
     			$serviceRequest->last_step = $serviceRequest::getLastStep($serviceRequest);
     			$serviceRequest->save();
-    			return $this->goBasicData($serviceRequest);
+    			return $this->goBasicData($serviceRequest->id);
     			break;
     		
     		case 2:
     			$serviceRequest->last_step = $serviceRequest::getLastStep($serviceRequest);
     			$serviceRequest->save();
-    			return $this->goComplementaryData($serviceRequest);
+    			return $this->goComplementaryData($serviceRequest->id);
     			break;
     		
     		case 3:

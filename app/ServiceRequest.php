@@ -7,9 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class ServiceRequest extends Model
 {
 	public $table = 'request';
-    public static function getRequest($id) {
+    
+    public function basicData() {
+        return $this->belongsTo('App\BasicData','basic_data_id');
+    }
+    public function complementaryData() {
+        return $this->belongsTo('App\ComplementaryData','complementary_data_id');
+    }
+    public function recording() {
+        return $this->belongsTo('App\Recording','recording_id');
+    }
+    
+    public static function getRequest($userId) {
     	
-    	$flow = ServiceRequest::where('user_id',$id)
+    	$flow = ServiceRequest::where('user_id',$userId)
     		->where('status','PENDING')
     		->first()
     		;
@@ -26,7 +37,7 @@ class ServiceRequest extends Model
             case 1:
                 switch ($currentStep) {
                     case 0:
-                        $lastStep = -1;
+                        $lastStep = 0;
                         break;
                     
                     case 1:
@@ -46,7 +57,7 @@ class ServiceRequest extends Model
                         break;
                     
                     default:
-                        $lastStep = -1;
+                        $lastStep = 0;
                         break;
                 }
                 break;
@@ -54,7 +65,7 @@ class ServiceRequest extends Model
             case 2:
                 switch ($currentStep) {
                     case 0:
-                        $lastStep = -1;
+                        $lastStep = 0;
                         break;
                     
                     case 1:
@@ -77,7 +88,7 @@ class ServiceRequest extends Model
                         break;
                     
                     default:
-                        $lastStep = -1;
+                        $lastStep = 0;
                         break;
                 }
                 break;
@@ -85,7 +96,7 @@ class ServiceRequest extends Model
             case 3:
                 switch ($currentStep) {
                     case 0:
-                        $lastStep = -1;
+                        $lastStep = 0;
                         break;
                     
                     case 1:
@@ -105,7 +116,7 @@ class ServiceRequest extends Model
                         break;
                     
                     default:
-                        $lastStep = -1;
+                        $lastStep = 0;
                         break;
                 }
                 break;
@@ -113,7 +124,7 @@ class ServiceRequest extends Model
             case 4:
                 switch ($currentStep) {
                     case 0:
-                        $lastStep = -1;
+                        $lastStep = 0;
                         break;
                     
                     case 1:
@@ -133,7 +144,7 @@ class ServiceRequest extends Model
                         break;
                     
                     default:
-                        $lastStep = -1;
+                        $lastStep = 0;
                         break;
                 }
                 break;

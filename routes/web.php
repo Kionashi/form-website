@@ -40,7 +40,16 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web']],function
     //Request
     Route::post('/peticion/crear','RequestController@start')->name('request/start');
     Route::post('/peticion/buscar','RequestController@search')->name('request/search');
-    Route::post('/peticion/datos-basicos','RequestController@basicData')->name('request/basic-data');
+    // Route::post('/peticion/datos-basicos','RequestController@basicData')->name('request/basic-data');
     Route::get('/peticion/regresar/{lastStep}','RequestController@return')->name('request/return/');
+    
+    Route::get('/peticion/{serviceRequestId}/datos-basicos','RequestController@goBasicData')->name('request/basic-data/');
+    Route::post('/peticion/datos-basicos','RequestController@processBasicData')->name('request/basic-data');
+    
+    Route::get('/peticion/{serviceRequestId}/datos-complementarios','RequestController@goComplementaryData')->name('request/complementary-data/');
+    Route::post('/peticion/datos-complementarios','RequestController@processComplementaryData')->name('request/complementary-data');
+    
+    Route::get('/peticion/{serviceRequestId}/regrabacion','RequestController@goRecording')->name('request/recording/');
+    Route::post('/peticion/regrabacion','RequestController@processRecording')->name('request/recording');
     
 });

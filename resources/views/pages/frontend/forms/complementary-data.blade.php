@@ -12,7 +12,7 @@
 		    </div>
 		@endif
 		<fieldset>
-			{!!Form::open(array('route' => 'request/basic-data','files'=>true)) !!}
+			{!!Form::open(array('route' => 'request/complementary-data','files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group">
