@@ -16,6 +16,7 @@ class CreateNoveltiesTable extends Migration
         Schema::create('novelties', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->integer('value');
             $table->timestamps();
         });
     }

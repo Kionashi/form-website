@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServiceRequest extends Model
 {
-	public $table = 'request';
+	public $table = 'service_request';
     
     public function basicData() {
         return $this->belongsTo('App\BasicData','basic_data_id');
@@ -17,10 +17,17 @@ class ServiceRequest extends Model
     public function recording() {
         return $this->belongsTo('App\Recording','recording_id');
     }
+    public function control() {
+        return $this->belongsTo('App\Control','control_id');
+    }
+    public function inspection() {
+        return $this->belongsTo('App\Inspection','inspection_id');
+    }
     
-    public static function getRequest($userId) {
+    public static function getRequest($userId, $serviceRequestId) {
     	
     	$flow = ServiceRequest::where('user_id',$userId)
+            ->where('service_id',$serviceRequestId)
     		->where('status','PENDING')
     		->first()
     		;
@@ -30,7 +37,7 @@ class ServiceRequest extends Model
     
     public static function getLastStep($serviceRequest) {
         
-        $currentStep = $serviceRequest->lastStep;
+        $currentStep = $serviceRequest->last_step;
         
         switch ($serviceRequest->service_id) {
             //Regrabación

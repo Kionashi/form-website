@@ -40,16 +40,35 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web']],function
     //Request
     Route::post('/peticion/crear','RequestController@start')->name('request/start');
     Route::post('/peticion/buscar','RequestController@search')->name('request/search');
-    // Route::post('/peticion/datos-basicos','RequestController@basicData')->name('request/basic-data');
     Route::get('/peticion/regresar/{lastStep}','RequestController@return')->name('request/return/');
     
+    //Datos Basicos
     Route::get('/peticion/{serviceRequestId}/datos-basicos','RequestController@goBasicData')->name('request/basic-data/');
     Route::post('/peticion/datos-basicos','RequestController@processBasicData')->name('request/basic-data');
     
+    //Datos Complementarios
     Route::get('/peticion/{serviceRequestId}/datos-complementarios','RequestController@goComplementaryData')->name('request/complementary-data/');
     Route::post('/peticion/datos-complementarios','RequestController@processComplementaryData')->name('request/complementary-data');
+    Route::post('/peticion/datos-complementarios/nuevo-color','RequestController@addColor')->name('request/complementary-data/add-color');
     
+    //Regrabación
     Route::get('/peticion/{serviceRequestId}/regrabacion','RequestController@goRecording')->name('request/recording/');
     Route::post('/peticion/regrabacion','RequestController@processRecording')->name('request/recording');
     
+    //Controru
+    Route::get('/peticion/{serviceRequestId}/control','RequestController@goControl')->name('request/control/');
+    Route::post('/peticion/control','RequestController@processControl')->name('request/control');
+    
+    //Imprimir
+    Route::get('/peticion/{serviceRequestId}/imprimir','RequestController@goPrint')->name('request/print/');
+    
+    //Inspección
+    Route::get('/peticion/{serviceRequestId}/inspection','RequestController@goInspection')->name('request/inspection/');
+    Route::post('/peticion/inspection','RequestController@processInspection')->name('request/inspection');
+    
+    
+    //Peticiones Ajax
+    Route::get('/peticion/campos-valoracion-visual/{visualValueFieldId}','RequestController@getVisualValueFields')->name('request/inspection/visual-value-fields/');
+    Route::get('/peticion/modelos/{brandId}','RequestController@getModels')->name('request/get-models/');
+    Route::get('/peticion/cilindrajes/modelo/{model}/marca/{brandId}','RequestController@getCylinders')->name('request/get-cylinders/');
 });

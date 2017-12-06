@@ -138,6 +138,9 @@
 
     <!-- Boostrap -->
     {!!Html::script('/js/bootstrap.min.js')!!}
+    
+    <!-- Moment JS -->
+    {!!Html::script('/js/moment.min.js')!!}
 
     <!-- Datepicker -->
     {!!Html::script('/js/bootstrap-datetimepicker.min.js')!!}

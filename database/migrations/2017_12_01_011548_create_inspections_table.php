@@ -15,22 +15,19 @@ class CreateInspectionsTable extends Migration
     {
         Schema::create('inspections', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('plate');
-            $table->string('first_reference');
-            $table->string('second_reference');
-            $table->string('fasecolda_value');
-            $table->string('fasecolda_code');
             $table->integer('discount');
             $table->integer('mileage');
-            $table->integer('approval');
+            $table->string('approval');
             $table->string('image1')->nullable();
             $table->string('image2')->nullable();
             $table->string('image3')->nullable();
             $table->string('image4')->nullable();
             $table->string('image5')->nullable();
             $table->string('image6')->nullable();
-            $table->integer('visual_value_id')->unsigned();
-            $table->foreign('visual_value_id')->references('id')->on('visual_values');
+            $table->integer('fasecolda_id')->unsigned();
+            $table->foreign('fasecolda_id')->references('id')->on('fasecolda');
+            $table->integer('fasecolda_year_value_id')->unsigned();
+            $table->foreign('fasecolda_year_value_id')->references('id')->on('fasecolda_years_values');
             $table->timestamps();
         });
     }

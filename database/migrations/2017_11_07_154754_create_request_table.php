@@ -17,6 +17,8 @@ class CreateRequestTable extends Migration
             $table->increments('id');
             $table->enum('status',['COMPLETED','PENDING']);
             $table->integer('last_step');
+            $table->enum('status',['APPROVED','REJECTED']);
+            $table->string('reject_reason')->nullable();
             $table->integer('service_id')->unsigned()->nullable();
             $table->foreign('service_id')->references('id')->on('services');
             $table->integer('user_id')->unsigned()->nullable();

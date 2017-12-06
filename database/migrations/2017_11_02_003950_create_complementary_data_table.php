@@ -20,15 +20,11 @@ class CreateComplementaryDataTable extends Migration
             $table->string('cylinders');
             $table->string('bodywork');
             $table->string('bodywork_type');
-            $table->string('fuel_type');
             $table->integer('capacity');
-            $table->integer('model');
-            $table->string('original_color');
-            $table->string('new_color');
             $table->string('import_declaration');
-            $table->integer('engine_number');
-            $table->integer('serial_number');
-            $table->integer('chassis_number');
+            $table->string('engine_number');
+            $table->string('serial_number');
+            $table->string('chassis_number');
             $table->date('import_date');
             $table->date('plate_date');
             $table->longText('observation');
@@ -38,10 +34,14 @@ class CreateComplementaryDataTable extends Migration
             $table->string('intermediary');
             $table->string('main_image')->nullable();
             $table->string('secondary_image')->nullable();
+            $table->integer('fuel_type_id')->unsigned();
+            $table->foreign('fuel_type_id')->references('id')->on('fuel_types');
+            $table->integer('color_id')->unsigned();
+            $table->foreign('color_id')->references('id')->on('colors');
             $table->integer('service_id')->unsigned();
-            $table->foreign('service_id')->references('id')->on('services');
-            $table->integer('brand_id')->unsigned();
-            $table->foreign('brand_id')->references('id')->on('brands');
+            $table->foreign('service_id')->references('id')->on('vehicle_services');
+            // $table->integer('brand_id')->unsigned();
+            // $table->foreign('brand_id')->references('id')->on('brands');
             $table->timestamps();
         });
     }

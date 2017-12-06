@@ -45,3 +45,8 @@
 	padding-right: 1em !important;
 	padding-left: 1em !important;
 }
+
+.thumbnail{
+	/*max-height: 150px;
+	max-width: 150px;*/
+}
