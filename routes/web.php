@@ -59,6 +59,10 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web']],function
     Route::get('/peticion/{serviceRequestId}/control','RequestController@goControl')->name('request/control/');
     Route::post('/peticion/control','RequestController@processControl')->name('request/control');
     
+     //RTC
+    Route::get('/peticion/{serviceRequestId}/rtc','RequestController@goRTC')->name('request/rtc/');
+    Route::post('/peticion/rtc','RequestController@processRTC')->name('request/rtc');
+    
     //Imprimir
     Route::get('/peticion/{serviceRequestId}/imprimir','RequestController@goPrint')->name('request/print/');
     
@@ -66,9 +70,20 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web']],function
     Route::get('/peticion/{serviceRequestId}/inspection','RequestController@goInspection')->name('request/inspection/');
     Route::post('/peticion/inspection','RequestController@processInspection')->name('request/inspection');
     
-    
     //Peticiones Ajax
     Route::get('/peticion/campos-valoracion-visual/{visualValueFieldId}','RequestController@getVisualValueFields')->name('request/inspection/visual-value-fields/');
     Route::get('/peticion/modelos/{brandId}','RequestController@getModels')->name('request/get-models/');
     Route::get('/peticion/cilindrajes/modelo/{model}/marca/{brandId}','RequestController@getCylinders')->name('request/get-cylinders/');
+    Route::get('/peticion/servicio/modelo/{model}/marca/{brandId}/cilindraje/{cylinderId}','RequestController@getVehicleService')->name('request/get-vehicle-service/');
+    Route::get('/peticion/combustible/modelo/{model}/marca/{brandId}/cilindraje/{cylinderId}/servicio/{vehicleServiceId}','RequestController@getFuelTypes')->name('request/get-fuel-types/');
+    
+    //Servicios Actuales
+    Route::post('/servicios-actuales/','RequestController@goCurrentServices')->name('current-services/');
+    
+    //Servicios Actuales
+    Route::post('/consulta-placa/','RequestController@goPlateSearch')->name('plate-search/');
+    
+    //testing
+    Route::get('/test','RequestController@goTest')->name('test');
+    Route::post('/testing','RequestController@processTest')->name('testing');
 });

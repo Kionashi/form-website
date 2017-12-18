@@ -23,7 +23,7 @@
 						{!! Form::text('turn',$complementaryData->turn,['placeholder' => 'Turno', 'class' =>'form-control']) !!}
 					</div>
 					<div class="col-md-4">
-						{!! Form::select('brandId',$brands,$basicData->brand_id,array('class' => 'form-control','id' => 'brand'))!!}
+						{!! Form::select('brandIdMirror',$brands,$basicData->brand_id,array('class' => 'form-control','id' => 'brand','disabled'))!!}
 					</div>
 					<div class="col-md-4">
 						{!! Form::text('line',$complementaryData->line,['placeholder' => 'Linea', 'class' =>'form-control']) !!}
@@ -35,7 +35,7 @@
 						{!! Form::select('cylinderId',$cylinders,$complementaryData->cylinder_id,['class' =>'form-control','id' => 'cylinder']) !!}
 					</div>
 					<div class="col-md-4">
-						{!! Form::select('serviceId',$services,$complementaryData->service_id,array('class' => 'form-control'))!!}
+						{!! Form::select('serviceId',$services,$complementaryData->service_id,array('class' => 'form-control','id' => 'vehicleService'))!!}
 					</div>
 					<div class="col-md-4">
 						{!! Form::text('bodywork',$complementaryData->bodywork,['placeholder' => 'Carrocería', 'class' =>'form-control']) !!}
@@ -49,14 +49,14 @@
 					</div>
 					<div class="col-md-3">
             
-						{!! Form::select('fuelTypeId',$fuelTypes,$complementaryData->fuel_type_id,array('class' => 'form-control'))!!}
+						{!! Form::select('fuelTypeId',$fuelTypes,$complementaryData->fuel_type_id,array('class' => 'form-control','id'=>'fuelType'))!!}
 					</div>
 					<div class="col-md-3">
 						{!! Form::text('capacity',$complementaryData->capacity,['placeholder' => 'Capacidad Kg/PSj', 'class' =>'form-control']) !!}
 					</div>
 					
 					<div class="col-md-3">
-						{!! Form::select('model',$models,$basicData->model,array('id'=>'model','class' => 'form-control'))!!}
+						{!! Form::select('modelMirror',$models,$basicData->model,array('id'=>'model','class' => 'form-control','disabled'))!!}
 					</div>
 					<label class="col-md-3 padding-top-1">Color</label>
 					<label class="col-md-3 padding-top-1">Nuevo Color</label>
@@ -68,7 +68,7 @@
 						{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
 						<div class="col-md-3 padding-top-1">
 							
-							{!! Form::text('name',null,['placeholder' => 'Nuevo Color', 'class' =>'form-control']) !!} 
+							{!! Form::text('newColor',null,['placeholder' => 'Nuevo Color', 'class' =>'form-control']) !!} 
 						</div>
 					{!!Form::close()!!}
 					<div class="col-md-6 padding-top-1">
@@ -149,31 +149,33 @@
             	format:'YYYY-MM-DD'
             });
             
-            $('#brand').change(function(){
+            
+            $('#cylinder').change(function(){
             	
             	//get brand current value (brandId)
+            	var cylinder = $('#cylinder').val();
+            	var model = $('#model').val();
             	var brand = $('#brand').val();
-            	
             	//build base url
 				var getUrl = window.location;
 				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
 				
 				//request url
-				var requestUrl = baseUrl + "/peticion/modelos/"+brand;
-				// console.log(requestUrl);
+				var requestUrl = baseUrl + "/peticion/servicio/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder;
+				console.log(requestUrl);
 				
 	            // Make the request
 				$.ajax({
 					type: "GET",
 					url: requestUrl,
-					success: function(models) {
+					success: function(vehicleServices) {
 						// Clear model fields container
-						$('#model').empty();
+						$('#vehicleService').empty();
 						// console.log('xxxx');
 						// console.log(models);
 						//for each model append a new option in the select
-						models.forEach(function(model){
-							$('#model').append(model);
+						vehicleServices.forEach(function(vehicleService){
+							$('#vehicleService').append(vehicleService);
 							
 						});
 						
@@ -183,23 +185,29 @@
 						//get brand current value (brandId)
 		            	var brand = $('#brand').val();
 		            	
+		            	 //Get vehicleService current value
+						var vehicleService = $('#vehicleService').val();
+						
+						 //Get cylinders current value
+						var cylinder = $('#cylinder').val();
+		            	
 						//build new request url
-						var requestUrl = baseUrl + "/peticion/cilindrajes/modelo/"+model+"/marca/"+brand;
+						var requestUrl = baseUrl + "/peticion/combustible/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder+"/servicio/"+vehicleService;
 						console.log(requestUrl);
 						
 			            // Make the request
 						$.ajax({
 							type: "GET",
 							url: requestUrl,
-							success: function(cylinders) {
+							success: function(fuelTypes) {
 								// Clear cylinder fields container
-								$('#cylinder').empty();
-								console.log('yyyy');
-								console.log(cylinders);
-								console.log('xxxx');
+								$('#fuelType').empty();
+								// console.log('yyyy');
+								// console.log(cylinders);
+								// console.log('xxxx');
 								//for each model append a new option in the select
-								cylinders.forEach(function(cylinder){
-									$('#cylinder').append(cylinder);
+								fuelTypes.forEach(function(fuelType){
+									$('#fuelType').append(fuelType);
 									
 								});
 								
@@ -222,8 +230,8 @@
 	           
             });
             
-            //when model changes update cylinders
-             $('#model').change(function(){
+            //when vehicleService changes update fuelTypes
+             $('#vehicleService').change(function(){
             	
             	//Get model current value
 				var model = $('#model').val();
@@ -231,27 +239,30 @@
 				//get brand current value (brandId)
             	var brand = $('#brand').val();
             	
+            	 //Get vehicleService current value
+				var vehicleService = $('#vehicleService').val();
+				
+				 //Get cylinders current value
+				var cylinder = $('#cylinder').val();
+            	
             	//build base url
 				var getUrl = window.location;
 				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
-            	
-				//build new request url
-				var requestUrl = baseUrl + "/peticion/cilindrajes/modelo/"+model+"/marca/"+brand;
-				console.log(requestUrl);
 				
+				//build new request url
+				var requestUrl = baseUrl + "/peticion/combustible/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder+"/servicio/"+vehicleService;
+				console.log(requestUrl);
+            	
 	            // Make the request
 				$.ajax({
 					type: "GET",
 					url: requestUrl,
-					success: function(cylinders) {
+					success: function(fuelTypes) {
 						// Clear cylinder fields container
-						$('#cylinder').empty();
-						console.log('yyyy');
-						console.log(cylinders);
-						console.log('xxxx');
+						$('#fuelType').empty();
 						//for each model append a new option in the select
-						cylinders.forEach(function(cylinder){
-							$('#cylinder').append(cylinder);
+						fuelTypes.forEach(function(fuelType){
+							$('#fuelType').append(fuelType);
 							
 						});
 						

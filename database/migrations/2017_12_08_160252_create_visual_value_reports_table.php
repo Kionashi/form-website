@@ -18,7 +18,7 @@ class CreateVisualValueReportsTable extends Migration
             $table->integer('inspection_id')->unsigned();
             $table->foreign('inspection_id')->references('id')->on('inspections');
             $table->integer('visual_value_field_value_id')->unsigned();
-            $table->foreign('visual_value_field_value_id')->references('id')->on('visual_value_fields');
+            $table->foreign('visual_value_field_value_id')->references('id')->on('visual_value_field_values');
             $table->timestamps();
         });
     }

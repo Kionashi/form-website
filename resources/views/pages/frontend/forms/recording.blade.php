@@ -18,23 +18,32 @@
 				<div class="form-group">
 					<label class="col-md-3 padding-top-1">Placa</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('plate',$basicData->plate,['placeholder' => 'Placa', 'class' =>'form-control']) !!}
+						{!! Form::text('plateMirror',$basicData->plate,['placeholder' => 'Placa', 'class' =>'form-control','disabled']) !!}
+						{!!Form::hidden('plate',$basicData->plate)!!}
 					</div>
 					<label class="col-md-3 padding-top-1">Tipo Carrocería</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('bodyworkType',$complementaryData->bodywork_type,['placeholder' => 'Tipo Carrocería', 'class' =>'form-control']) !!}
+						{!! Form::text('bodyworkTypeMirror',$complementaryData->bodywork_type,['placeholder' => 'Tipo Carrocería', 'class' =>'form-control','disabled']) !!}
+						{!!Form::hidden('bodyworkType',$complementaryData->bodywork_type)!!}
+						
 					</div>
 					<label class="col-md-3 padding-top-1">Marca</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::select('brandId',$brands,$basicData->brand_id,array('class' => 'form-control'))!!}
+						{!! Form::select('brandIdMirror',$brands,$basicData->brand_id,array('class' => 'form-control','disabled'))!!}
+						{!!Form::hidden('brandId',$basicData->brand_id)!!}
+						
 					</div>
 					<label class="col-md-3 padding-top-1">Modelo</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::select('model',$models,$basicData->model,array('class' => 'form-control'))!!}
+						{!! Form::select('modelMirror',$models,$basicData->model,array('class' => 'form-control','disabled'))!!}
+						{!!Form::hidden('model',$basicData->model)!!}
+						
 					</div>
 					<label class="col-md-3 padding-top-1">Linea</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('line',$complementaryData->line,['placeholder' => 'Linea', 'class' =>'form-control']) !!}
+						{!! Form::text('lineMirror',$complementaryData->line,['placeholder' => 'Linea', 'class' =>'form-control','disabled']) !!}
+						{!!Form::hidden('line',$complementaryData->line)!!}
+						
 					</div>
 					<label class="col-md-3 padding-top-1">Clase</label>
 					<div class="col-md-3 padding-top-1">
@@ -42,15 +51,21 @@
 					</div>
 					<label class="col-md-3 padding-top-1">Motor</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('engineNumber',$complementaryData->engine_number,['placeholder' => 'Motor', 'class' =>'form-control']) !!}
+						{!! Form::text('engineNumberMirror',$complementaryData->engine_number,['placeholder' => 'Motor', 'class' =>'form-control','disabled']) !!}
+						{!!Form::hidden('engineNumber',$complementaryData->engine_number)!!}
+						
 					</div>
 					<label class="col-md-3 padding-top-1">Serie</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('serialNumber',$complementaryData->serial_number,['placeholder' => 'Serie', 'class' =>'form-control']) !!}
+						{!! Form::text('serialNumberMirror',$complementaryData->serial_number,['placeholder' => 'Serie', 'class' =>'form-control','disabled']) !!}
+						{!!Form::hidden('serialNumber',$complementaryData->serial_number)!!}
+						
 					</div>
 					<label class="col-md-3 padding-top-1">Chasis</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('chassisNumber',$complementaryData->chassis_number,['placeholder' => 'Chasis', 'class' =>'form-control']) !!}
+						{!! Form::text('chassisNumberMirror',$complementaryData->chassis_number,['placeholder' => 'Chasis', 'class' =>'form-control','disabled']) !!}
+						{!!Form::hidden('chassisNumber',$complementaryData->chassis_number)!!}
+						
 					</div>
 					<label class="col-md-3 padding-top-1">Parte regrabada</label>
 					<div class="col-md-3 padding-top-1">
@@ -58,15 +73,15 @@
 					</div>
 					<label class="col-md-3 padding-top-1">Color</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::select('colorId',$colors,$complementaryData->color_id,array('class' => 'form-control'))!!}
+						{!! Form::select('colorIdMirror',$colors,$complementaryData->color_id,array('class' => 'form-control','disabled'))!!}
+						{!!Form::hidden('colorId',$complementaryData->color_id)!!}
+						
 					</div>
 					<label class="col-md-3 padding-top-1">Nuevo Color</label>
-					{!!Form::open(array('route' => 'request/complementary-data/add-color')) !!}
-						{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
-						<div class="col-md-3 padding-top-1">
-							{!! Form::text('name',null,['placeholder' => 'Nuevo Color', 'class' =>'form-control']) !!} 
-						</div>
-					{!!Form::close()!!}
+					
+					<div class="col-md-3 padding-top-1">
+						{!! Form::text('name',null,['placeholder' => 'Nuevo Color', 'class' =>'form-control','disabled']) !!} 
+					</div>
 					
 					<h3 class="col-md-12 padding-top-1" align="center">Datos de revisión</h3>
 					

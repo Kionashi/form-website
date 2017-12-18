@@ -32,6 +32,9 @@ class CreateFasecoldaTable extends Migration
             $table->foreign('vehicle_service_id')->references('id')->on('vehicle_services');
             $table->integer('cylinder_id')->unsigned();
             $table->foreign('cylinder_id')->references('id')->on('cylinders');
+            $table->integer('vehicle_class_id')->unsigned();
+            $table->foreign('vehicle_class_id')->references('id')->on('vehicle_classes');
+            $table->timestamps();
         });
     }
 

@@ -26,7 +26,7 @@
 					</div>
 				</div>
 			{!! Form::close() !!}
-			{!!Form::open(array('route' => 'request/search')) !!}
+			{!!Form::open(array('route' => 'current-services/')) !!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group padding-top-4">
 					<label class="col-md-3">Servicios Actuales</label>
@@ -41,7 +41,7 @@
 					</div>
 				</div>
 			{!! Form::close() !!}
-			{!!Form::open(array('route' => 'request/search')) !!}
+			{!!Form::open(array('route' => 'plate-search/')) !!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group padding-top-4">
 					<label class="col-md-3">Consulta por Placa</label>

@@ -17,7 +17,6 @@ class CreateComplementaryDataTable extends Migration
             $table->increments('id');
             $table->string('turn');
             $table->string('line');
-            $table->string('cylinders');
             $table->string('bodywork');
             $table->string('bodywork_type');
             $table->integer('capacity');
@@ -34,6 +33,8 @@ class CreateComplementaryDataTable extends Migration
             $table->string('intermediary');
             $table->string('main_image')->nullable();
             $table->string('secondary_image')->nullable();
+            $table->integer('cylinder_id')->unsigned();
+            $table->foreign('cylinder_id')->references('id')->on('cylinders');
             $table->integer('fuel_type_id')->unsigned();
             $table->foreign('fuel_type_id')->references('id')->on('fuel_types');
             $table->integer('color_id')->unsigned();

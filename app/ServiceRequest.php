@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServiceRequest extends Model
 {
-	public $table = 'service_request';
+    public $table = 'service_request';
     
     public function basicData() {
         return $this->belongsTo('App\BasicData','basic_data_id');
@@ -23,7 +23,12 @@ class ServiceRequest extends Model
     public function inspection() {
         return $this->belongsTo('App\Inspection','inspection_id');
     }
-    
+    public function rtc() {
+        return $this->belongsTo('App\RTC','rtc_id');
+    }
+    public function service() {
+        return $this->belongsTo('App\Service','service_id');
+    }
     public static function getRequest($userId, $serviceRequestId) {
     	
     	$flow = ServiceRequest::where('user_id',$userId)

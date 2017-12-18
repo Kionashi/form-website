@@ -14,6 +14,8 @@
 		<fieldset>
 			{!!Form::open(array('route' => 'request/inspection','files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequest->id)!!}
+			{!!Form::hidden('fasecoldaCode',$fasecoldaCode,array('id' => 'fasecoldaCode'))!!}
+			{!!Form::hidden('fasecoldaValue',$fasecoldaValue,array('id' => 'fasecoldaValue'))!!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group">
 					<label class="col-md-3 padding-top-1">Placa</label>
@@ -22,35 +24,35 @@
 					</div>
 					<label class="col-md-3 padding-top-1">Referencia 1</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::select('referenceId1',$references,null,array('class' => 'form-control'))!!}
+						{!! Form::select('referenceId1',$firstReferences,$inspection->first_reference_id,array('class' => 'form-control'))!!}
 					</div>
 					<label class="col-md-3 padding-top-1">Referencia 2</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::select('referenceId2',$references,null,array('class' => 'form-control'))!!}
+						{!! Form::select('referenceId2',$secondReferences,$inspection->second_reference_id,array('class' => 'form-control'))!!}
 					</div>
 					<label class="col-md-3 padding-top-1">Valor Fasecolda</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('fasecoldaValue',$inspection->fasecolda_value,['placeholder' => 'Valor Fasecolda', 'class' =>'form-control']) !!} 
+						{!! Form::text('fasecoldaValueMirror',$fasecoldaValue,['disabled', 'class' =>'form-control', 'id' => 'fasecoldaValueMirror']) !!} 
 					</div>
 					<label class="col-md-3 padding-top-1">Código Fasecolda</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('fasecoldaCode',null,['placeholder' => 'Código Fasecolda', 'class' =>'form-control']) !!} 
+						{!! Form::text('fasecoldaCodeMirror',$fasecoldaCode,['placeholder' => 'Código Fasecolda', 'class' =>'form-control','disabled','id' => 'fasecoldaCodeMirror']) !!} 
 					</div>
 					<label class="col-md-3 padding-top-1">Valoración Visual</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::select('visualValueId',$visualValues,null,array('id'=>'visualValue','class' => 'form-control'))!!}
+						{!! Form::select('visualValueId',$visualValueSelect,null,array('id'=>'visualValue','class' => 'form-control'))!!}
 					</div>
 					<label class="col-md-3 padding-top-1">Descuento</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('discount',null,['placeholder' => 'Descuento', 'class' =>'form-control']) !!} 
+						{!! Form::text('discount',$inspection->discount,['placeholder' => 'Descuento', 'class' =>'form-control']) !!} 
 					</div>
 					<label class="col-md-3 padding-top-1">Kilometraje</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('mileage',null,['placeholder' => 'Kilometraje', 'class' =>'form-control']) !!} 
+						{!! Form::text('mileage',$inspection->mileage,['placeholder' => 'Kilometraje', 'class' =>'form-control']) !!} 
 					</div>
 					<label class="col-md-3 padding-top-1">Aprobación</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('approval',null,['placeholder' => 'Aprobación', 'class' =>'form-control']) !!} 
+						{!! Form::text('approval',$inspection->approval,['placeholder' => 'Aprobación', 'class' =>'form-control']) !!} 
 					</div>
 					
 					<h3 class="col-md-12 padding-top-1" align="center">Carga Fotos</h3>
@@ -63,11 +65,20 @@
 					
 					<h3 class="col-md-12 padding-top-1" align="center">Valoración visual</h3>
 					<div id="visualValueFieldsContainer" class="col-md-12">
-						@foreach($visualValueFields as $visualValueField)
-						<label class="col-md-3 padding-top-1">{{$visualValueField->name}}</label>
-						<div class="col-md-3 padding-top-1">
-							{!! Form::select("data['.$visualValueField->id.']['.$visualValueField->visualValueFieldValue->id.'][value]'",$visualValueField->visualValueFieldValues->pluck('name','id'),null,array('class' => 'form-control'))!!}
-						</div>
+						@foreach($visualValues as $visualValue)
+							<div id="visual-value-{{$visualValue->id}}" style="display: none;">
+								<h3 class="col-md-12 padding-top-1" align="center">{{$visualValue->name}}</h3>
+								@foreach($visualValue->visualValueFields as $visualValueField)
+									<label class="col-md-3 padding-top-1">{{$visualValueField->name}}</label>
+									<div class="col-md-3 padding-top-1">
+										<select name="{{$visualValue->name}}-{{$visualValueField->name}}">
+											@foreach($visualValueField->visualValueFieldValues as $visualValueFieldValue)
+												<option value="{{$visualValueFieldValue->id}}">{{$visualValueFieldValue->name}}</option>
+											@endforeach
+										</select>
+									</div>
+								@endforeach
+							</div>
 						@endforeach
 					</div>
 					<h3 class="col-md-12 padding-top-1" align="center">Accesorios</h3>
@@ -75,19 +86,21 @@
 					<label class="col-md-3 padding-top-1">Marca/Referencia</label>
 					<label class="col-md-3 padding-top-1">Valor</label>
 					<label class="col-md-3 padding-top-1">Cantidad</label>
-					<div id="accesoriesContainer">
+					<div id="accessoriesContainer">
+					@foreach($accessories as $i => $accessory)
 						<div class="col-md-3 padding-top-1">
-							{!! Form::text('accesories[0][type]',null,['placeholder' => 'Tipo', 'class' =>'form-control']) !!} 
+							{!! Form::text('accessories['.$i.'][type]',$accessory->type,['placeholder' => 'Tipo', 'class' =>'form-control']) !!} 
 						</div>
 						<div class="col-md-3 padding-top-1">
-							{!! Form::text('accesories[0][brand]',null,['placeholder' => 'Marca/Referencia', 'class' =>'form-control']) !!} 
+							{!! Form::text('accessories['.$i.'][brand]',$accessory->reference,['placeholder' => 'Marca/Referencia', 'class' =>'form-control']) !!} 
 						</div>
 						<div class="col-md-3 padding-top-1">
-							{!! Form::text('accesories[0][value]',null,['placeholder' => 'Valor', 'class' =>'form-control']) !!} 
+							{!! Form::text('accessories['.$i.'][value]',$accessory->value,['placeholder' => 'Valor', 'class' =>'form-control']) !!} 
 						</div>
 						<div class="col-md-3 padding-top-1">
-							{!! Form::number('accesories[0][amount]',null,['placeholder' => 'Cantidad', 'class' =>'form-control']) !!} 
+							{!! Form::number('accessories['.$i.'][amount]',$accessory->amount,['placeholder' => 'Cantidad', 'class' =>'form-control']) !!} 
 						</div>
+					@endforeach
 					</div>
 					<div class="col-md-12">
 						<div id="addAccesoryButton" class="col-md-3 padding-top-1" align="center">
@@ -97,7 +110,7 @@
 					<h3 class="col-md-12 padding-top-1" align="center">Novedades</h3>
 					@foreach($novelties as $novelty)
 						<div class="col-md-9">{{$novelty->name}}</div>
-						<div class="col-md-3">{!! Form::checkbox($novelty->id,null) !!}</div>
+						<div class="col-md-3">{!! Form::checkbox('novelty-'.$novelty->id,null,$novelty->selected) !!}</div>
 					@endforeach
 					<div class="col-md-12" >
 					<div class="col-md-3 padding-top-1" align="center">
@@ -117,20 +130,20 @@
 @section('custom_script')
 	<script type="text/javascript">
 		$(document).ready(function(){
-			var i = 1;
+			var i = {{$accessoriesCount}};
 			$('#addAccesoryButton').click(function(){
-				$('#accesoriesContainer').append(''+
+				$('#accessoriesContainer').append(''+
 					'<div class="col-md-3 padding-top-1">'+
-						'<input placeholder="Tipo" class="form-control" name="accesories['+i+'][type]" type="text"> '+
+						'<input placeholder="Tipo" class="form-control" name="accessories['+i+'][type]" type="text"> '+
 					'</div>'+
 					'<div class="col-md-3 padding-top-1">'+
-						'<input placeholder="Marca/Referencia" class="form-control" name="accesories['+i+'][brand]" type="text"> '+
+						'<input placeholder="Marca/Referencia" class="form-control" name="accessories['+i+'][brand]" type="text"> '+
 					'</div>'+
 					'<div class="col-md-3 padding-top-1">'+
-						'<input placeholder="Valor" class="form-control" name="accesories['+i+'][value]" type="text"> '+
+						'<input placeholder="Valor" class="form-control" name="accessories['+i+'][value]" type="text"> '+
 					'</div>'+
 					'<div class="col-md-3 padding-top-1">'+
-						'<input placeholder="Cantidad" class="form-control" name="accesories['+i+'][amount]" type="number"> '+
+						'<input placeholder="Cantidad" class="form-control" name="accessories['+i+'][amount]" type="number"> '+
 					'</div>');
 					// Update counter
 					i++;
@@ -141,46 +154,12 @@
 				
 				// Visual value id
 				var visualValueId = $('#visualValue').val();
-				var getUrl = window.location;
-				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
-				var requestUrl = baseUrl + "/peticion/campos-valoracion-visual/"+visualValueId;
-				console.log(requestUrl);
 				
-				// Get visual value fields
-				// $.ajax({
-				// 	type: "GET",
-				// 	url: requestUrl,
-				// 	success: function(visualValueFields) {
-				// 		// Clear visual value fields container
-				// 		$('#visualValueFieldsContainer').empty();
-				// 		for (i = 0; i < visualValueFields.length; ++i) {
-				// 			// Add label to value fields
-				// 			$('#visualValueFieldsContainer').append('<label class="col-md-3 padding-top-1">'+visualValueFields[i].name+'</label>');
-							
-				// 			// Add select to value fields
-				// 			$('#visualValueFieldsContainer').append('<div class="col-md-3 padding-top-1">');
-				// 			$('#visualValueFieldsContainer').append('<select class="form-control" id="data['+visualValueFields[i].id+']" name="data['+visualValueFields[i].id+'][value]">');
-				// 			// console.log(visualValueFields[i].visual_value_field_values);
-				// 			for (j = 0; j < visualValueFields[i].visual_value_field_values.length; ++j) {
-				// 				// $('#data['+visualValueFields[i].id+']').append('<option value="2">defor fuerte</option>');
-								
-				// 				$('#data['+visualValueFields[i].id+']').append('<option value="'+j+'">xxxx</option>');
-				// 			}
-							
-							
-				// 			// <div class="col-md-3 padding-top-1">
-				// 			// 	<select class="form-control" name="data['.1.']['.->id.'][value]'"><option value="1">malo</option><option value="2">defor fuerte</option><option value="3">defor media</option><option value="4">repar mala</option><option value="5">repar buena</option><option value="6">sumido</option><option value="7">bueno</option></select>
-				// 			// </div>
-							
-							
-				// 		}
-						
-				// 	},
-				// 	error: function(e) {
-				// 		console.log('error');
-				// 		console.log(e);
-				// 	}
-				// });
+				// Hide all visual values
+				$('[id^=visual-value-]').hide();
+				
+				// Show selected visual value
+				$('#visual-value-'+visualValueId).show();
 			});
 		});
 	</script>

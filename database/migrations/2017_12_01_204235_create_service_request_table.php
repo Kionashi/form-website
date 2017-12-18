@@ -33,6 +33,8 @@ class CreateServiceRequestTable extends Migration
             $table->foreign('inspection_id')->references('id')->on('inspections');
             $table->integer('rtc_id')->unsigned()->nullable();
             $table->foreign('rtc_id')->references('id')->on('rtc');
+            $table->integer('control_id')->unsigned()->nullable();
+            $table->foreign('control_id')->references('id')->on('controls');
             
             $table->timestamps();
         });
