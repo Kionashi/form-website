@@ -16,21 +16,19 @@
 			{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group">
-					<div class="col-md-12">
-						<label class="col-md-3 padding-top-1">Placa</label>
-						<div class="col-md-3 padding-top-1">
-							{!! Form::text('plateMirror',$basicData->plate,['placeholder' => 'Placa', 'class' =>'form-control','disabled']) !!}
-							{!!Form::hidden('plate',$basicData->plate)!!}
-						</div>
+					<label class="col-md-3 padding-top-1">Placa</label>
+					<div class="col-md-3 padding-top-1">
+						{!! Form::text('plateMirror',$basicData->plate,['placeholder' => 'Placa', 'class' =>'form-control','disabled']) !!}
+						{!!Form::hidden('plate',$basicData->plate)!!}
 					</div>
 					<label class="col-md-3 padding-top-1">No. Radicación</label>
 					<div class="col-md-3 padding-top-1">
 						{!! Form::text('radicationNumber',$rtc->radication_number,['placeholder' => 'No. Radicación', 'class' =>'form-control']) !!}
 					</div>
-					<label class="col-md-3 padding-top-1">No. Formulario</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('formNumber',$rtc->form_number,['placeholder' => 'No. Formulario', 'class' =>'form-control']) !!}
-					</div>
+<!-- 					<label class="col-md-3 padding-top-1">No. Formulario</label>
+					<div class="col-md-3 padding-top-1"> -->
+						{!! Form::hidden('formNumber','N/A') !!}
+					<!-- </div> -->
 					<label class="col-md-3 padding-top-1">Marca</label>
 					<div class="col-md-3 padding-top-1">
 						{!! Form::select('brandIdMirror',$brands,$basicData->brand_id,array('class' => 'form-control','disabled'))!!}

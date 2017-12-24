@@ -20,7 +20,8 @@
 				<div class="form-group">
 					<label class="col-md-3 padding-top-1">Placa</label>
 					<div class="col-md-3 padding-top-1">
-						{!! Form::text('plate',$serviceRequest->basicData->plate,['placeholder' => 'Placa', 'class' =>'form-control']) !!}
+						{!! Form::text('plateMirror',$serviceRequest->basicData->plate,['placeholder' => 'Placa', 'class' =>'form-control','disabled']) !!}
+						{!!Form::hidden('plate',$serviceRequest->basicData->plate)!!}
 					</div>
 					<label class="col-md-3 padding-top-1">Referencia 1</label>
 					<div class="col-md-3 padding-top-1">

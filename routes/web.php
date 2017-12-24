@@ -70,11 +70,15 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web']],function
     Route::get('/peticion/{serviceRequestId}/inspection','RequestController@goInspection')->name('request/inspection/');
     Route::post('/peticion/inspection','RequestController@processInspection')->name('request/inspection');
     
-    //Peticiones Ajax
+    // Ajax request
     Route::get('/peticion/campos-valoracion-visual/{visualValueFieldId}','RequestController@getVisualValueFields')->name('request/inspection/visual-value-fields/');
+    
     Route::get('/peticion/modelos/{brandId}','RequestController@getModels')->name('request/get-models/');
+    
     Route::get('/peticion/cilindrajes/modelo/{model}/marca/{brandId}','RequestController@getCylinders')->name('request/get-cylinders/');
-    Route::get('/peticion/servicio/modelo/{model}/marca/{brandId}/cilindraje/{cylinderId}','RequestController@getVehicleService')->name('request/get-vehicle-service/');
+    
+    Route::get('/peticion/servicio/modelo/{model}/marca/{brandId}/cilindraje/{cylinderId}','RequestController@getVehicleServices')->name('request/get-vehicle-service/');
+    
     Route::get('/peticion/combustible/modelo/{model}/marca/{brandId}/cilindraje/{cylinderId}/servicio/{vehicleServiceId}','RequestController@getFuelTypes')->name('request/get-fuel-types/');
     
     //Servicios Actuales

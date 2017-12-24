@@ -355,27 +355,28 @@ class RequestController extends AppController
     	$brands = Brand::all()
     		->pluck('name','id')
     		;
-    	$services = VehicleService::all()
-    		->pluck('name','id')
-    		;
-    	$colors = Color::all()
-    		->pluck('name','id')
-    		;
-    		
-    	/////////////////////////////////////////////////////
-    		$brandId = $basicData->brand_id;
-    	$fasecoldaYearValues = FasecoldaYearValue::with('fasecolda')
-    		->whereHas('fasecolda',function($query) use ($brandId){
-    			$query->where('brand_id',$brandId)
-					;
-    		})
-    		->orderBy('year','desc')
-    		->get()
-    		;
-    	$models = array();
+        
+        $colors = Color::all()
+            ->pluck('name','id')
+            ;
+            
+        /////////////////////////////////////////////////////
+        $brandId = $basicData->brand_id;
+        $fasecoldaYearValues = FasecoldaYearValue::with('fasecolda.vehicleService')
+            ->whereHas('fasecolda',function($query) use ($brandId){
+                $query->where('brand_id',$brandId)
+                    ;
+            })
+            ->orderBy('year','desc')
+            ->get()
+            ;
+        
+        $models = array();
+    	$services = array();
     	
     	foreach($fasecoldaYearValues as $fasecoldaYearValue){
     		$models[$fasecoldaYearValue->year] = $fasecoldaYearValue->year;
+            $services[$fasecoldaYearValue->fasecolda->vehicleService->id] = $fasecoldaYearValue->fasecolda->vehicleService->name;
     	};
     	
     	$models = array_unique($models);
@@ -611,26 +612,36 @@ class RequestController extends AppController
             ->with('complementaryData.vehicleService')
     		->with('basicData.brand')
     		->with('rtc.vehicleClass')
-    		->with('inspection')
+    		->with('inspection.accessories')
+            ->with('inspection.novelties')
     		->with('control')
     		->find($serviceRequestId)
     		;
             
-        $visualValues = VisualValue::with('visualValueFields')->get();
-            if ($serviceRequest->inspection){
+        // dump($serviceRequest->inspection);die;
+        if($serviceRequest->inspection) {
+            $visualValues = VisualValue::with('visualValueFields')->get();
                 foreach($visualValues as $visualValue) {
+                    $total = 0;
                     foreach($visualValue->visualValueFields as $i => $visualValueField) {
                         foreach($serviceRequest->inspection->visualValueFieldValues as $visualValueFieldValue) {
                             if($visualValueField->id == $visualValueFieldValue->visual_value_field_id) {
                                 $visualValue->visualValueFields[$i]->valueName = $visualValueFieldValue->name;
                                 $visualValue->visualValueFields[$i]->value = $visualValueFieldValue->value;
+                                $total = $total + intval($visualValueFieldValue->value);
                             }
                         }
                     }
+                    $visualValue->total = $total;
                 }
-            }
-        if($serviceRequest->inspection) {
+                
             $serviceRequest->inspection->visualValues = $visualValues;
+            $totalAccesories = 0;
+            foreach($serviceRequest->inspection->accessories as $accesory){
+                $accesory->total = intval($accesory->value) * intval($accesory->amount);
+                $totalAccesories = $totalAccesories + $accesory->total;
+            }
+            $serviceRequest->inspection->totalAccesories = $totalAccesories;
         }
     	date_default_timezone_set('America/Bogota');
 		$date = date('Y-m-d', time());
@@ -1795,10 +1806,15 @@ class RequestController extends AppController
     	return $uniqueModels;
     }
     
-    public function getFuelTypes($brandId, $model,$cylinderId,$vehicleServiceId) {
+    public function getFuelTypes($model, $brandId,$cylinderId,$vehicleServiceId) {
     	
+        // dump($brandId);
+        // dump($model);
+        // dump($cylinderId);
+        // dump($vehicleServiceId);
+        // die;
+        
     	$fasecoldaYearValues = FasecoldaYearValue::where('year',$model)
-    		->with('fasecolda')
     		->with('fasecolda.fuelType')
     		->whereHas('fasecolda',function($query) use ($brandId,$cylinderId,$vehicleServiceId){
     			$query->where('brand_id',$brandId)
@@ -1808,6 +1824,8 @@ class RequestController extends AppController
     		})
     		->get()
     		;
+        
+        // dump($fasecoldaYearValues);die;
     	$fuelTypes = array();
     	foreach($fasecoldaYearValues as $fasecoldaYearValue){
     		// $cylinder = Cylinder::find($fasecoldaYearValue->fasecolda->cylinder_id);
@@ -1826,8 +1844,11 @@ class RequestController extends AppController
     	return $uniqueFuelTypes;
     }
     
-    public function getVehicleServices($brandId, $model,$cylinderId) {
-    	
+    public function getVehicleServices($model, $brandId,$cylinderId) {
+    // 	dump('model '.$model);
+    //     dump('brandId '.$brandId);
+    //     dump('cylinderId '.$cylinderId);
+    // die;
     	$fasecoldaYearValues = FasecoldaYearValue::where('year',$model)
     		->with('fasecolda')
     		->with('fasecolda.vehicleService')

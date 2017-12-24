@@ -21,7 +21,8 @@
 						<label class="col-md-2 padding-top-1">Regrabación</label>
 						<label class="col-md-2 padding-top-1">Inspección</label>
 						<label class="col-md-1 padding-top-1">RTC</label>
-						<label class="col-md-2 padding-top-1">Control</label>
+						<label class="col-md-1 padding-top-1">Control</label>
+						<label class="col-md-1 padding-top-1">Imprimir</label>
 					</div>
 			@foreach($serviceRequests as $serviceRequest)
 				<div class="row">
@@ -65,9 +66,17 @@
 							<h2><i class="fa fa-square-o" aria-hidden="true"></i></h2>
 						@endif
 					</div>
-					<div class="col-md-2 padding-top-1">
+					<div class="col-md-1 padding-top-1">
 						@if($serviceRequest->progress == 'COMPLETED')
 							<h2><a href="{{route('request/control/',$serviceRequest->id)}}"><i class="fa fa-check-square-o" aria-hidden="true"></i></a></h2>
+						@endif
+						@if($serviceRequest->progress == 'PENDING')
+							<h2><i class="fa fa-square-o" aria-hidden="true"></i></h2>
+						@endif
+					</div>
+					<div class="col-md-1 padding-top-1">
+						@if($serviceRequest->progress == 'COMPLETED')
+							<h2><a href="{{route('request/print/',$serviceRequest->id)}}"><i class="fa fa-check-square-o" aria-hidden="true"></i></a></h2>
 						@endif
 						@if($serviceRequest->progress == 'PENDING')
 							<h2><i class="fa fa-square-o" aria-hidden="true"></i></h2>
