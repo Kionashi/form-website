@@ -2,7 +2,7 @@
 @section('content')
 	<div class="rounded clear-bg padding-2">
 		<h3 align="center">Datos Complementarios</h3>
-		@if ($errors->any())
+	<!-- 	@if ($errors->any())
 		    <div class="alert alert-danger">
 		        <ul>
 		            @foreach ($errors->all() as $error)
@@ -10,120 +10,177 @@
 		            @endforeach
 		        </ul>
 		    </div>
-		@endif
+		@endif -->
 		<fieldset>
-			{!!Form::open(array('route' => 'request/complementary-data','files'=>true)) !!}
+			{!!Form::open(array('files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group">
+				<div class="row">
 					<label class="col-md-4 padding-top-1">Turno</label>
-					<label class="col-md-4 padding-top-1">Marca</label>
-					<label class="col-md-4 padding-top-1">Linea</label>
+					<label class="col-md-4 visible-lg visible-md padding-top-1">Marca</label>
+					<label class="col-md-4 visible-lg visible-md padding-top-1">Linea</label>
 					<div class="col-md-4">
 						{!! Form::text('turn',$complementaryData->turn,['placeholder' => 'Turno', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('turn')}}</div>
 					</div>
+					<label class="col-md-4 hidden-lg hidden-md padding-top-1">Marca</label>
 					<div class="col-md-4">
-						{!! Form::select('brandIdMirror',$brands,$basicData->brand_id,array('class' => 'form-control','id' => 'brand','disabled'))!!}
+						{{$basicData->brand->name}}
+						{!!Form::hidden('brand',$basicData->brand->id,['id' => 'brand']) !!}
 					</div>
+					<label class="col-md-4 hidden-lg hidden-md padding-top-1">Linea</label>
 					<div class="col-md-4">
 						{!! Form::text('line',$complementaryData->line,['placeholder' => 'Linea', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('line')}}</div>
 					</div>
+				</div>
+				<div class="row">
 					<label class="col-md-4 padding-top-1">Cilindrada</label>
-					<label class="col-md-4 padding-top-1">Servicio</label>
-					<label class="col-md-4 padding-top-1">Carrocería</label>
+					<label class="col-md-4 visible-lg visible-md padding-top-1">Servicio</label>
+					<label class="col-md-4 visible-lg visible-md padding-top-1">Carrocería</label>
 					<div class="col-md-4">
 						{!! Form::select('cylinderId',$cylinders,$complementaryData->cylinder_id,['class' =>'form-control','id' => 'cylinder']) !!}
 					</div>
+					<label class="col-md-4 hidden-lg hidden-md padding-top-1">Servicio</label>
 					<div class="col-md-4">
 						{!! Form::select('serviceId',$services,$complementaryData->service_id,array('class' => 'form-control','id' => 'vehicleService'))!!}
 					</div>
+					<label class="col-md-4 hidden-lg hidden-md padding-top-1">Carrocería</label>
 					<div class="col-md-4">
 						{!! Form::text('bodywork',$complementaryData->bodywork,['placeholder' => 'Carrocería', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('bodywork')}}</div>
 					</div>
+				</div>
+				<div class="row">
 					<label class="col-md-3 padding-top-1">Tipo Carrocería</label>
-					<label class="col-md-3 padding-top-1">Combustible</label>
-					<label class="col-md-3 padding-top-1">Capacidad Kg/PSj</label>
-					<label class="col-md-3 padding-top-1">Modelo</label>
-					<div class="col-md-3">
-						{!! Form::text('bodyworkType',$complementaryData->bodywork_type,['placeholder' => 'Tipo Carrocería', 'class' =>'form-control']) !!}
+					<label class="col-md-3 visible-lg visible-md padding-top-1">Combustible</label>
+					<label class="col-md-3 visible-lg visible-md padding-top-1">Capacidad Kg/PSj</label>
+					<label class="col-md-3 visible-lg visible-md padding-top-1">Modelo</label>
+					<div class="row margin-0">
+						<div class="col-md-3">
+							{!! Form::text('bodyworkType',$complementaryData->bodywork_type,['placeholder' => 'Tipo Carrocería', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('bodyworkType')}}</div>
+						</div>
+						<label class="col-md-3 hidden-lg hidden-md padding-top-1">Combustible</label>
+						<div class="col-md-3">
+	            
+							{!! Form::select('fuelTypeId',$fuelTypes,$complementaryData->fuel_type_id,array('class' => 'form-control','id'=>'fuelType'))!!}
+						</div>
+						<label class="col-md-3 hidden-lg hidden-md padding-top-1">Capacidad Kg/PSj</label>
+						<div class="col-md-3">
+							{!! Form::text('capacity',$complementaryData->capacity,['placeholder' => 'Capacidad Kg/PSj', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('capacity')}}</div>
+						</div>
+						<label class="col-md-3 hidden-lg hidden-md padding-top-1">Modelo</label>
+						<div class="col-md-3">
+							{{$basicData->model}}
+							{!!Form::hidden('model',$basicData->model,['id' => 'model']) !!}
+							
+						</div>
 					</div>
-					<div class="col-md-3">
-            
-						{!! Form::select('fuelTypeId',$fuelTypes,$complementaryData->fuel_type_id,array('class' => 'form-control','id'=>'fuelType'))!!}
+				</div>
+				<div class="row">
+					<div class="row margin-0">
+						<label class="col-md-3 padding-top-1">Color</label>
+						<label class="col-md-3 visible-lg visible-md padding-top-1">Nuevo Color</label>
+						<label class="col-md-6 visible-lg visible-md padding-top-1">Declaración Importación</label>
 					</div>
-					<div class="col-md-3">
-						{!! Form::text('capacity',$complementaryData->capacity,['placeholder' => 'Capacidad Kg/PSj', 'class' =>'form-control']) !!}
-					</div>
-					
-					<div class="col-md-3">
-						{!! Form::select('modelMirror',$models,$basicData->model,array('id'=>'model','class' => 'form-control','disabled'))!!}
-					</div>
-					<label class="col-md-3 padding-top-1">Color</label>
-					<label class="col-md-3 padding-top-1">Nuevo Color</label>
-					<label class="col-md-6 padding-top-1">Declaración Importación</label>
 					<div class="col-md-3 padding-top-1">
 						{!! Form::select('colorId',$colors,$complementaryData->color_id,array('class' => 'form-control'))!!}
 					</div>
-					{!!Form::open(array('route' => 'request/complementary-data/add-color')) !!}
-						{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
-						<div class="col-md-3 padding-top-1">
-							
-							{!! Form::text('newColor',null,['placeholder' => 'Nuevo Color', 'class' =>'form-control']) !!} 
-						</div>
-					{!!Form::close()!!}
+					<label class="col-md-3 hidden-lg hidden-md padding-top-1">Nuevo Color</label>
+					<div class="col-md-3 padding-top-1">
+						
+						{!! Form::text('newColor',null,['placeholder' => 'Nuevo Color', 'class' =>'form-control']) !!} 
+					</div>
+					<label class="col-md-6 hidden-lg hidden-md padding-top-1">Declaración Importación</label>
 					<div class="col-md-6 padding-top-1">
 						{!! Form::text('importDeclaration',$complementaryData->import_declaration,['placeholder' => 'Declaración Importación', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('importDeclaration')}}</div>
 					</div>
+				</div>
+				<div class="row">
 					<label class="col-md-3 padding-top-1">Número Motor</label>
-					<label class="col-md-3 padding-top-1">Número Serie</label>
-					<label class="col-md-6 padding-top-1">Número Chasis</label>
+					<label class="col-md-3 visible-lg visible-md padding-top-1">Número Serie</label>
+					<label class="col-md-6 visible-lg visible-md padding-top-1">Número Chasis</label>
 					<div class="col-md-3">
 						{!! Form::text('engineNumber',$complementaryData->engine_number,['placeholder' => 'Número Motor', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('engineNumber')}}</div>
 					</div>
+					<label class="col-md-3 hidden-lg hidden-md padding-top-1">Número Serie</label>
 					<div class="col-md-3">
 						{!! Form::text('serialNumber',$complementaryData->serial_number,['placeholder' => 'Número Serie', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('serialNumber')}}</div>
 					</div>
+					<label class="col-md-6 hidden-lg hidden-md padding-top-1">Número Chasis</label>
 					<div class="col-md-6">
 						{!! Form::text('chassisNumber',$complementaryData->chassis_number,['placeholder' => 'Número Chasis', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('chassisNumber')}}</div>
 					</div>
-					<label class="col-md-6 padding-top-1">Fecha Importación</label>
-					<label class="col-md-6 padding-top-1">Fecha Matricula</label>
-					<div class="col-md-12" style="display: inline-flex;">
+				</div>
+				<div class="row">
+					<label class="col-md-6 col-sm-12 padding-top-1">Fecha Importación</label>
+					<!-- <label class="col-md-6 col-sm-12 padding-top-1">Fecha Matricula</label> -->
+					<label class="col-md-6 col-sm-12 visible-lg visible-md padding-top-1">Fecha Matricula</label>
+					<div class="col-md-12 datepickers">
 						<div class="col-md-6 input-group date" id='importDate'>
 							{!!Form::text('importDate',$complementaryData->import_date,array('placeholder' => 'Fecha Importación', 'class' => 'form-control')) !!}<span class="input-group-addon">
 				                    <span class="glyphicon glyphicon-calendar"></span>
 				                </span>
 							
 						</div>
+						<!-- <div class="red">{{$errors->first('importDate')}}</div> -->
+						<label class="col-md-6 col-sm-12 hidden-lg hidden-md padding-top-1">Fecha Matricula</label>
 						<div class="col-md-6 input-group date" id='plateDate'>
 							{!! Form::text('plateDate',$complementaryData->plate_date,['placeholder' => 'Fecha Matricula', 'class' =>'form-control']) !!}<span class="input-group-addon">
 				                    <span class="glyphicon glyphicon-calendar"></span>
 				                </span>
 						</div>
+				                <!-- <div class="red">{{$errors->first('plateDate')}}</div> -->
 					</div>	
+				</div>
+				<div class="row">
 					<label class="col-md-3 padding-top-1">Observación</label>
 					<div class="col-md-9  padding-top-1">
 						{!! Form::textarea('observation',$complementaryData->observation,['class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('observation')}}</div>
 					</div>
+				</div>
+				<div class="row">
 					<label class="col-md-3 padding-top-1">Sede</label>
-					<label class="col-md-3 padding-top-1">Solicitado Por:</label>
-					<label class="col-md-3 padding-top-1">Asegurado</label>
-					<label class="col-md-3 padding-top-1">Intermediario</label>
+					<label class="col-md-3 visible-lg visible-md padding-top-1">Solicitado Por:</label>
+					<label class="col-md-3 visible-lg visible-md padding-top-1">Asegurado</label>
+					<label class="col-md-3 visible-lg visible-md padding-top-1">Intermediario</label>
 					<div class="col-md-3">
 						{!! Form::text('headquarters',$complementaryData->headquarters,['placeholder' => 'Sede', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('headquarters')}}</div>
 					</div>
+					<label class="col-md-3 hidden-lg hidden-md padding-top-1">Solicitado Por:</label>
+					
 					<div class="col-md-3">
 						{!! Form::text('requestedBy',$complementaryData->requested_by,['placeholder' => 'Solicitado Por:', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('requestedBy')}}</div>
 					</div>
+					<label class="col-md-3 hidden-lg hidden-md padding-top-1">Asegurado</label>
+					
 					<div class="col-md-3">
 						{!! Form::text('insured',$complementaryData->insured,['placeholder' => 'Asegurado', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('insured')}}</div>
 					</div>
+					<label class="col-md-3 hidden-lg hidden-md padding-top-1">Intermediario</label>
 					
 					<div class="col-md-3">
 						{!! Form::text('intermediary',$complementaryData->intermediary,['placeholder' => 'Intermediario', 'class' =>'form-control']) !!}
+						<div class="red">{{$errors->first('intermediary')}}</div>
 					</div>
+				</div>
+				<div class="row">
+				<div class="row">
 					<label class="col-md-3 padding-top-1">Imagenes</label>
-					<div class="col-md-3 padding-top-1">{!! Form::file('primaryImage') !!}{!! Form::file('secondaryImage') !!}</div>
+					<div class="col-md-3 padding-top-1">{!! Form::file('primaryImage') !!}{!! Form::file('secondaryImage') !!}
+					<div class="red">{{$errors->first('primaryImage')}}</div></div>
+				</div>
 					<div class="col-md-3 padding-top-1">
 						<a class="btn btn-primary btn-block" href="{{route('request/return/',$serviceRequestId)}}">Regresar</a>
 					</div>
@@ -229,6 +286,7 @@
 				
 	           
             });
+            $('#cylinder').trigger('change');
             
             //when vehicleService changes update fuelTypes
              $('#vehicleService').change(function(){
@@ -274,7 +332,7 @@
 				});
 	           
             });
-            
+            $('#vehicleService').trigger('change');
 							
             
         });

@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Backend;
 use Illuminate\Http\Request;
 use App\User;
 use App\UserRole;
+use App\ServiceRequest;
 use Auth;
-use App\Http\Controllers\AppController;
+use App\Http\Controllers\BackendController;
 
-class UsersController extends AppController
+class UsersController extends BackendController
 {
 	// Validation rules
 	protected $signUpValidationRules=[
@@ -74,16 +75,21 @@ class UsersController extends AppController
     	$roleId = $request->input('roleId');
     	$password = $request->input('password');
     	$status = $request->input('status');
-    	
+    	$company = $request->input('company');
+        
     	$role = UserRole::findOrFail($roleId);
     	
     	$user = new User();
-    	$user->name = $name;
-    	$user->password = bcrypt($password);
+        if ($role->name == 'EXTERNAL') {
+            $user->company = $company;
+        }
+        $user->name = $name;
+        $user->password = bcrypt($password);
         $user->email = $email;
         $user->status = $status;
         $user->user_role_id = $roleId;
-    	$user->save();
+        $user->save();
+        
         
         //Registrar auditoria
         // $this->storeAudit($request,'CREAR USUARIO',$user->id);
@@ -123,15 +129,18 @@ class UsersController extends AppController
 		$this->validate($request, $this->editValidationRules);
 		
 		$name = $request->input('name');
-    	
     	$roleId = $request->input('roleId');
     	$password = $request->input('password');
     	$status = $request->input('status');
     	$id = $request->input('id');
-    	
+    	$company = $request->input('company');
+        
     	$role = UserRole::findOrFail($roleId);
     	
     	$user = User::findOrFail($id);
+        if ($role->name == 'EXTERNAL') {
+            $user->company = $company;
+        }
     	$user->name = $name;
     	$user->password = bcrypt($password);
         $user->email = $email;
@@ -175,6 +184,11 @@ class UsersController extends AppController
 	
 	public function delete($id) {
 		
+        $requests = ServiceRequest::where('user_id',$id)->get();
+        
+        foreach ($requests as $request) {
+            $request->delete();
+        }
 		$user = User::findOrFail($id);
 		$user->delete();
 		// Mostrar vista

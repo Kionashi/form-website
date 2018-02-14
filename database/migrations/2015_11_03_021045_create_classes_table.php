@@ -13,11 +13,11 @@ class CreateClassesTable extends Migration
      */
     public function up()
     {
-        // Schema::create('classes', function (Blueprint $table) {
-        //     $table->increments('id');
-        //     $table->string('name');
-        //     $table->timestamps();
-        // });
+        Schema::create('classes', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -27,6 +27,6 @@ class CreateClassesTable extends Migration
      */
     public function down()
     {
-        // Schema::dropIfExists('classes');
+        Schema::dropIfExists('classes');
     }
 }

@@ -88,6 +88,9 @@
 		@if(!$serviceRequests)
 			<h2>No se encontraron servicios</h2>
 		@endif
+		<div class="col-md-3 offset-6 padding-top-1" align="center">
+			<a class="btn btn-primary btn-block" href="{{route('/')}}">Regresar</a>
+		</div>
 		</fieldset>
 	</div>
 @endsection

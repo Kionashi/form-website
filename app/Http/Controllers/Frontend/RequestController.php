@@ -42,7 +42,7 @@ class RequestController extends AppController
     
     // Validation rules
 	protected $basicDataValidationRules=[
-		'plate' 			=> 'required',
+		'plate' 			=> ['required', 'regex:^([aA-zZ]{3}[0-9]{3})|([aA-zZ]{3}[0-9]{2}[aA-zZ]{1})|([aA-zZ]{3}[0-9]{2})^', 'max:6'],
 		'firstName'			=> 'required',
 		'lastName' 			=> 'required',
 		'brandId' 			=> 'required',
@@ -55,6 +55,14 @@ class RequestController extends AppController
 		'finalizationSoat'	=> 'required'
 	];
 	
+    protected $validationMessages = [
+        'required'  => 'Este campo es requerido',
+        'numeric'   => 'Este campo debe ser numérico',
+        'unique'    => 'Ese color ya se encuentra registrado',
+        'regex'     => 'La placa debe estar en formato XXX### , XXX## o XXX##X',
+        'max'       => 'La placa debe tener un tamaño máximo de 6'
+    ];
+    
 	protected $colorValidationRules=[
 		'name' 			=> 'required|unique:colors'
 	];
@@ -80,7 +88,7 @@ class RequestController extends AppController
 		'chassisNumber'		=> 'required',
 		'importDate'		=> 'required',
 		'plateDate'			=> 'required',
-		'observation'		=> 'required',
+		// 'observation'		=> 'required',
 		'headquarters'		=> 'required',
 		'requestedBy'		=> 'required',
 		'insured'			=> 'required',
@@ -111,7 +119,6 @@ class RequestController extends AppController
 		'plate' 			=> 'required',
 		'referenceId1'		=> 'required',
 		'referenceId2'		=> 'required',
-		'visualValueId'		=> 'required',
 		'discount'			=> 'required',
 		'mileage'			=> 'required',
 		'approval'			=> 'required',
@@ -310,20 +317,30 @@ class RequestController extends AppController
     	
     	// Find brands
     	$brands = Brand::all()
+            ->sortBy('name')
     		->pluck('name','id')
     		;
     	// Find services
     	$services = Service::all()
     		->pluck('name','id')
     		;
-    		
-    	// Get all years from 1950 to current year + 1
-    	$nextYear = date('Y') + 1;
-    	$models = array();
-    	for($i = 1950; $i <= $nextYear; $i++) {
-    		$models[$i] = $i;
-    	}
     	
+        $nextYear = date('Y') + 1;
+        $firstBrand = Brand::first();
+        $brandId = $firstBrand->id;
+        // dump($firstBrand);die;
+        
+        $fasecoldaYearValues = FasecoldaYearValue::with('fasecolda')
+            ->whereHas('fasecolda',function($query) use ($brandId){
+                $query->where('brand_id',$brandId)
+                    ;
+            })
+            ->orderBy('year','desc')
+            ->get()
+            ;
+        foreach($fasecoldaYearValues as $yearValue) {
+            $models[$yearValue->year] = $yearValue->year;
+        }
     	$userTypes = array();
     	$userTypes = ['INTERNAL'=> 'Interno', 'EXTERNAL'=>'Externo'];
     	
@@ -348,6 +365,8 @@ class RequestController extends AppController
     	$complementaryData = $serviceRequest->complementaryData;
     	if(! $complementaryData) {
     		$complementaryData = new ComplementaryData();
+            $complementaryData->import_date = date("Y-m-ds");
+            $complementaryData->plate_date = date("Y-m-ds");
     		$this->complementaryDataValidationRules['primaryImage'] = 'required';
     		$this->complementaryDataValidationRules['secondaryImage'] = 'required';
     	}
@@ -460,10 +479,13 @@ class RequestController extends AppController
     	for($i = 1950; $i <= $nextYear; $i++) {
     		$models[$i] = $i;
     	}
-    	$inspectors = User::all()
+    	$inspectors = User::where('status','ACTIVE')
+            ->with('role')
+            ->whereHas('role',function($query){
+                $query->where('name','INSPECTOR');
+            })
     		->pluck('name','id')
     		;
-    	
     	$fasecoldaYearValues = FasecoldaYearValue::where('year',$basicData->model)
     		->with('fasecolda')
     		->whereHas('fasecolda',function($query) use ($basicData,$complementaryData){
@@ -604,37 +626,77 @@ class RequestController extends AppController
     
     public function goPrint($serviceRequestId){
     	
-    	// dump('print');die;
-    	// Find service request
-    	$serviceRequest = ServiceRequest::with('recording.vehicleClass')
-    		->with('recording.inspector')
-    		->with('complementaryData.color')
+        // Find service request
+        $serviceRequest = ServiceRequest::with('recording.vehicleClass')
+            ->with('recording.inspector')
+            ->with('complementaryData.color')
             ->with('complementaryData.vehicleService')
-    		->with('basicData.brand')
-    		->with('rtc.vehicleClass')
-    		->with('inspection.accessories')
+            ->with('basicData.brand')
+            ->with('rtc.vehicleClass')
+            ->with('inspection.accessories')
             ->with('inspection.novelties')
-    		->with('control')
-    		->find($serviceRequestId)
-    		;
-            
+            ->with('control')
+            ->find($serviceRequestId)
+            ;
+        //Amount of fields that will be into the visual value tables
+        $maxVisualValueFields = 10;
+        
         // dump($serviceRequest->inspection);die;
         if($serviceRequest->inspection) {
+            
             $visualValues = VisualValue::with('visualValueFields')->get();
-                foreach($visualValues as $visualValue) {
-                    $total = 0;
-                    foreach($visualValue->visualValueFields as $i => $visualValueField) {
-                        foreach($serviceRequest->inspection->visualValueFieldValues as $visualValueFieldValue) {
-                            if($visualValueField->id == $visualValueFieldValue->visual_value_field_id) {
-                                $visualValue->visualValueFields[$i]->valueName = $visualValueFieldValue->name;
-                                $visualValue->visualValueFields[$i]->value = $visualValueFieldValue->value;
-                                $total = $total + intval($visualValueFieldValue->value);
+            foreach($visualValues as $key => $visualValue) {
+                $total = 0;
+                $totalArray = array();
+                foreach($visualValue->visualValueFields as $i => $visualValueField) {
+                    foreach($serviceRequest->inspection->visualValueFieldValues as $visualValueFieldValue) {
+                        if($visualValueField->id == $visualValueFieldValue->visual_value_field_id) {
+                            $visualValue->visualValueFields[$i]->valueName = $visualValueFieldValue->name;
+                            $visualValue->visualValueFields[$i]->value = $visualValueFieldValue->value;
+                            // $total = $total + intval($visualValueFieldValue->value);
+                            // $total+= $visualValueFieldValue->value;
+                            // array_push($totalArray,$visualValueFieldValue->value);
+                            $totalArray[$visualValueField->name] = $visualValueFieldValue->value;
+                        }
+                    }
+                }
+                $visualValues[$key]->totalArray = $totalArray;
+                $total = 0;
+                foreach($totalArray as $element) {
+                    $total = $total+= $element;
+                }
+                
+                $visualValues[$key]->total = $total;
+            }
+            // dump($visualValues);
+            // die;
+            //sort $visualValues
+            $sortedVisualValueFields = array();
+            foreach($visualValues as $i => $visualValue) {
+                // dump($visualValue->visualValueFields);
+                foreach ($visualValue->visualValueFields as $visualValueField) {
+                    if(count($sortedVisualValueFields) < $maxVisualValueFields) {
+                        if($visualValueField->value > 0) {
+                            array_push($sortedVisualValueFields,$visualValueField);
+                        }
+                    }
+                }
+                
+                if(count($sortedVisualValueFields) < $maxVisualValueFields) {
+                    foreach ($visualValue->visualValueFields as $visualValueField) {
+                        if(count($sortedVisualValueFields) < $maxVisualValueFields) {
+                            if($visualValueField->value == 0) {
+                                array_push($sortedVisualValueFields,$visualValueField);
                             }
                         }
                     }
-                    $visualValue->total = $total;
                 }
-                
+                // dump($sortedVisualValueFields);
+                // die;
+                $visualValues[$i]->visualValueFields = $sortedVisualValueFields;
+                $sortedVisualValueFields = array();
+            }
+            // die;
             $serviceRequest->inspection->visualValues = $visualValues;
             $totalAccesories = 0;
             foreach($serviceRequest->inspection->accessories as $accesory){
@@ -650,10 +712,9 @@ class RequestController extends AppController
         $data =array('serviceRequest' => $serviceRequest);
         $pdf = PDF::loadView('pages.frontend.reports.print', $data);
         // dump($pdf);die;
-        return $pdf->download('invoice.pdf');
-    	return view('pages.frontend.reports.print')
-    		->with('serviceRequest',$data)
-    		;
+        $pdfName = $serviceRequest->basicData->plate.'-'.$serviceRequest->service->name.'.pdf';
+        return $pdf->download($pdfName);
+    	return redirect()->route('/');
     	
     }
 
@@ -780,6 +841,13 @@ class RequestController extends AppController
     		// dump($visualValueFieldValues);
     	
     	$novelties = Novelty::all();
+        $noveltiesPagination = 6;
+        $noveltiesCount = Novelty::count();
+        $noveltiesPages = intdiv($noveltiesCount, $noveltiesPagination);
+        $noveltiesRest = $noveltiesCount% $noveltiesPagination;
+        if($noveltiesRest > 0) {
+            $noveltiesPages++;
+        }
     	$selectedNovelties = InspectionNovelty::where('inspection_id',$inspection->id)
     		->get();
     	foreach($novelties as $novelty) {
@@ -811,6 +879,10 @@ class RequestController extends AppController
     		->with('fasecoldaValue',$fasecoldaValue)
     		->with('visualValueSelect',$visualValueSelect)
     		->with('novelties',$novelties)
+            ->with('noveltiesPagination',$noveltiesPagination)
+            ->with('noveltiesRest',$noveltiesRest)
+            ->with('noveltiesPages',$noveltiesPages)
+            ->with('noveltiesCount',$noveltiesCount)
     		->with('accessories',$accessories)
     		->with('accessoriesCount',$accessories->count()+1)
     		;
@@ -846,11 +918,16 @@ class RequestController extends AppController
     		->pluck('name','id')
     		;
     
-    	$inspectors = User::all()
-    		->pluck('name','id')
-    		;
+    	$inspectors = User::where('status','ACTIVE')
+            ->with('role')
+            ->whereHas('role',function($query){
+                $query->where('name','INSPECTOR');
+            })
+            ->pluck('name','id')
+            ;
     	
     	$vehicleClasses =VehicleClass::all()
+            ->sortBy('name')
     		->pluck('name','id')
     		; 
     	
@@ -918,7 +995,7 @@ class RequestController extends AppController
     public function processBasicData (Request $request) {
     	
     	//Validation
-    	$this->validate($request, $this->basicDataValidationRules);
+    	$this->validate($request, $this->basicDataValidationRules, $this->validationMessages);
     	
     	//Getting the data from the forms
     	$plate = $request->input('plate');
@@ -988,7 +1065,7 @@ class RequestController extends AppController
     
     public function processComplementaryData(Request $request){
     	
-    	$this->validate($request, $this->complementaryDataValidationRules);
+    	$this->validate($request, $this->complementaryDataValidationRules, $this->validationMessages);
     	
     	$serviceRequestId = $request->input('serviceRequestId');
     	$turn = $request->input('turn');
@@ -1016,7 +1093,10 @@ class RequestController extends AppController
     	$intermediary = $request->input('intermediary');
     	$primaryImage = $request->primaryImage;
     	$secondaryImage = $request->secondaryImage;
-    	    	
+    	
+        if ($observation == null) {
+            $observation = 'Sin observaciones';
+        }
     	$serviceRequest = ServiceRequest::with('complementaryData')
     		->with('basicData')
     		->find($serviceRequestId)
@@ -1108,7 +1188,7 @@ class RequestController extends AppController
     
     public function processRecording(Request $request) {
     	
-    	$this->validate($request, $this->recordingValidationRules);
+    	$this->validate($request, $this->recordingValidationRules, $this->validationMessages);
     	
     	$serviceRequestId = $request->input('serviceRequestId');
     	$plate = $request->input('plate');
@@ -1213,7 +1293,7 @@ class RequestController extends AppController
     
     public function processRTC(Request $request) {
     	
-    	$this->validate($request, $this->rtcValidationRules);
+    	$this->validate($request, $this->rtcValidationRules, $this->validationMessages);
     	
     	$serviceRequestId = $request->input('serviceRequestId');
     	// $plate = $request->input('plate');
@@ -1728,7 +1808,7 @@ class RequestController extends AppController
     
     public function addColor(Request $request) {
     	
-    	$this->validate($request, $this->colorValidationRules);
+    	$this->validate($request, $this->colorValidationRules, $this->validationMessages);
     	
     	$name = $request->input('name');
     	$serviceRequestId = $request->input('serviceRequestId');
@@ -1779,6 +1859,74 @@ class RequestController extends AppController
     	// dump($uniqueCylinders);die;
     	
     	return $uniqueCylinders;
+    }
+    
+    public function getCurrentServices($plate){
+        
+        
+        $serviceRequests = ServiceRequest::where('progress','PENDING')
+            ->with('basicData')
+            ->get()
+            ;
+            $services = array();
+        // dump($serviceRequests);die;
+        $servicesId = array();
+        foreach($serviceRequests as $serviceRequest) {
+            if($serviceRequest->basicData) {
+                if($serviceRequest->basicData->plate == $plate)
+                $servicesId[$serviceRequest->service_id] = $serviceRequest->service_id;
+            }
+        }
+        foreach($servicesId as $serviceId){
+            $service = Service::find($serviceId);
+            // $cylinder = Cylinder::find($fasecoldaYearValue->fasecolda->cylinder_id);
+            $services[] = "<option value="."\"".$service->id."\"".">".$service->name."</option>";
+        };
+        // dump($cylinders);die;
+        // dump($services);die;
+        $services = array_unique($services);
+        $uniqueServices = array();
+        foreach($services as $uniqueService){
+            $uniqueServices[] = $uniqueService;
+        }
+        // echo 1234;
+        // dump($uniqueServices);die;
+        
+        return $uniqueServices;
+    }
+    
+    public function getServices($plate){
+        
+        
+        $serviceRequests = ServiceRequest::all()
+            ->with('basicData')
+            ->get()
+            ;
+            $services = array();
+        // dump($serviceRequests);die;
+        $servicesId = array();
+        foreach($serviceRequests as $serviceRequest) {
+            if($serviceRequest->basicData) {
+                if($serviceRequest->basicData->plate == $plate)
+                $servicesId[$serviceRequest->service_id] = $serviceRequest->service_id;
+            }
+        }
+        foreach($servicesId as $serviceId){
+            $service = Service::find($serviceId);
+            // $cylinder = Cylinder::find($fasecoldaYearValue->fasecolda->cylinder_id);
+            $services[] = "<option value="."\"".$service->id."\"".">".$service->name."</option>";
+        };
+        // dump($cylinders);die;
+        // dump($services);die;
+        $services = array_unique($services);
+        $uniqueServices = array();
+        foreach($services as $uniqueService){
+            $uniqueServices[] = $uniqueService;
+        }
+        // echo 1234;
+        // dump($uniqueServices);die;
+        
+        return $uniqueServices;
     }
     
     public function getModels($brandId) {

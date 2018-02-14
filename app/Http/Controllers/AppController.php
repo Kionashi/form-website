@@ -8,12 +8,15 @@ use Auth;
 
 class AppController extends Controller
 {
+	public function __construct() {
+		$this->middleware('auth');
+	}
+	
     function view($view = null, $data = [], $mergeData = []) {
 	
-	return view($view, $data, $mergeData)
-     	// >with('auth', $auth)
-    ;
-    
+		return view($view, $data, $mergeData)
+	     	// >with('auth', $auth)
+	    ;
 	}
 	
 	public function storeAudit ($request, $action, $entityId) {

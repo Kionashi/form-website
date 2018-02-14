@@ -2,7 +2,7 @@
 @section('content')
 	<div class="rounded clear-bg padding-2">
 		<h3 align="center">Control</h3>
-		@if ($errors->any())
+		<!-- @if ($errors->any())
 		    <div class="alert alert-danger">
 		        <ul>
 		            @foreach ($errors->all() as $error)
@@ -10,7 +10,7 @@
 		            @endforeach
 		        </ul>
 		    </div>
-		@endif
+		@endif -->
 		<fieldset>
 		
 			@if($serviceRequest->basicData)
@@ -308,18 +308,18 @@
 					@endif
 				</div>
 			</div>
-			{!!Form::open(array('route' => 'request/control','files'=>true)) !!}
+			{!!Form::open(array('files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequest->id)!!}
 					<div class="row">
 						<label class="col-md-2 padding-top-1">Estado</label>
 						<div class="col-md-2 padding-top-1">
-							{!! Form::select('status',['APPROVED'=> 'Aprobado','REJECTED' => 'Rechazado'],null,array('class' => 'form-control'))!!}
+							{!! Form::select('status',['APPROVED'=> 'Aprobado','REJECTED' => 'Rechazado'],null,array('class' => 'form-control','id' => 'status'))!!}
 						</div>
 					</div>
-					<div class="row">
+					<div class="row" id ="rejectReasonContainer">
 						<label class="col-md-2 padding-top-1">Motivo del rechazo</label>
-						<div class="col-md-9 padding-top-1">
-							{!! Form::textarea('rejectReason',null,['placeholder' => 'Motivo del rechazo', 'class' =>'form-control']) !!}
+						<div class="col-md-9 padding-top-1" >
+							{!! Form::textarea('rejectReason',null,['placeholder' => 'Motivo del rechazo', 'class' =>'form-control','id' =>'rejectReason']) !!}
 						</div>
 					</div>
 					<div class="row" >
@@ -327,7 +327,10 @@
 							<a class="btn btn-primary btn-block" href="{{route('request/return/',$serviceRequest->id)}}">Regresar</a>
 						</div>
 						<div class="col-md-2 padding-top-1" align="center">
-							<input class="btn btn-success btn-block" type="submit" name="" value="Continuar">
+							<input class="btn btn-success btn-block" type="submit" name="" value="Imprimir">
+						</div>
+						<div class="col-md-3 offset-6 padding-top-1" align="center">
+							<a class="btn btn-warning btn-block" href="{{route('/')}}">Volver al Centro de Solicitudes</a>
 						</div>
 					</div>
 					
@@ -337,3 +340,25 @@
 		</fieldset>
 	</div>
 @endsection
+@section('custom_script')
+	{!!Html::script('/js/jquery.easyPaginate.js')!!}
+	<script type="text/javascript">
+		$(document).ready(function(){
+			
+			$('#status').change(function(){
+				// Visual value id
+				var status = $('#status').val();
+				if(status == 'APPROVED'){
+					
+					$('#rejectReasonContainer').hide();
+					$('#rejectReason').val('');
+				}else{
+					$('#rejectReasonContainer').show();
+					
+				}
+				
+			});
+			$('#status').trigger('change');
+		});
+	</script>
+@stop

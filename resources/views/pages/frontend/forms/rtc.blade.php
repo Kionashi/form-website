@@ -2,7 +2,7 @@
 @section('content')
 	<div class="rounded clear-bg padding-2">
 		<h3 align="center">RTC</h3>
-		@if ($errors->any())
+		<!-- @if ($errors->any())
 		    <div class="alert alert-danger">
 		        <ul>
 		            @foreach ($errors->all() as $error)
@@ -10,118 +10,149 @@
 		            @endforeach
 		        </ul>
 		    </div>
-		@endif
+		@endif -->
 		<fieldset>
-			{!!Form::open(array('route' => 'request/rtc','files'=>true)) !!}
+			{!!Form::open(array('files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group">
-					<label class="col-md-3 padding-top-1">Placa</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('plateMirror',$basicData->plate,['placeholder' => 'Placa', 'class' =>'form-control','disabled']) !!}
-						{!!Form::hidden('plate',$basicData->plate)!!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Placa</label>
+						<div class="col-md-3 padding-top-1">
+							{{$basicData->plate}}
+							{!!Form::hidden('plate',$basicData->plate)!!}
+						</div>
+						<label class="col-md-3 padding-top-1">No. Radicación</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('radicationNumber',$rtc->radication_number,['placeholder' => 'No. Radicación', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('radicationNumber')}}</div>
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">No. Radicación</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('radicationNumber',$rtc->radication_number,['placeholder' => 'No. Radicación', 'class' =>'form-control']) !!}
-					</div>
+					<div class="row">
 <!-- 					<label class="col-md-3 padding-top-1">No. Formulario</label>
 					<div class="col-md-3 padding-top-1"> -->
 						{!! Form::hidden('formNumber','N/A') !!}
 					<!-- </div> -->
-					<label class="col-md-3 padding-top-1">Marca</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('brandIdMirror',$brands,$basicData->brand_id,array('class' => 'form-control','disabled'))!!}
-							{!!Form::hidden('brandId',$basicData->brand_id)!!}
-						
-					</div>
-					<label class="col-md-3 padding-top-1">Clase</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('classId',$vehicleClasses,null,array('class' => 'form-control'))!!}
-					</div>
-					<label class="col-md-3 padding-top-1">Color</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('colorIdMirror',$colors,$complementaryData->color_id,array('class' => 'form-control','disabled'))!!}
-							{!!Form::hidden('colorId',$complementaryData->color_id)!!}
-						
-					</div>
-					<label class="col-md-3 padding-top-1">Nuevo Color</label>
-					{!!Form::open(array('route' => 'request/complementary-data/add-color')) !!}
-						{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
+						<label class="col-md-3 padding-top-1">Marca</label>
 						<div class="col-md-3 padding-top-1">
-							{!! Form::text('name',null,['placeholder' => 'Nuevo Color', 'class' =>'form-control','disabled']) !!} 
+							{{$basicData->brand->name}}
+							{!!Form::hidden('brandId',$basicData->brand_id)!!}
 						</div>
-					{!!Form::close()!!}
-					
-					<label class="col-md-3 padding-top-1">Plaqueta Serie</label>
-					<div class="col-md-3 padding-top-1">{!! Form::file('serialFile') !!}</div>
-					
-					<label class="col-md-3 padding-top-1">Lineas 1</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('line1',$rtc->line1,['placeholder' => 'Lineas 1', 'class' =>'form-control']) !!}
+						<label class="col-md-3 padding-top-1">Clase</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::select('classId',$vehicleClasses,null,array('class' => 'form-control'))!!}
+						</div>
 					</div>
-					
-					<label class="col-md-3 padding-top-1">Nro Motor</label>
-					<div class="col-md-3 padding-top-1">{!! Form::file('engineFile') !!}</div>
-					<label class="col-md-3 padding-top-1">Lineas 2</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('line2',$rtc->line2,['placeholder' => 'Lineas 2', 'class' =>'form-control']) !!}
-					</div>
-					<label class="col-md-3 padding-top-1">Nro Chasis</label>
-					<div class="col-md-3 padding-top-1">{!! Form::file('chassisFile') !!}</div>
-					<label class="col-md-3 padding-top-1">Lineas 3</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('line3',$rtc->line3,['placeholder' => 'Lineas 3', 'class' =>'form-control']) !!}
-					</div>
-					<label class="col-md-3 padding-top-1">Modelo</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('modelMirror',$models,$basicData->model,array('class' => 'form-control','disabled'))!!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Color</label>
+						<div class="col-md-3 padding-top-1">
+							{{$complementaryData->color->name}}
+							{!!Form::hidden('colorId',$complementaryData->color_id)!!}
+						</div>
+						<label class="col-md-3 padding-top-1">Modelo</label>
+						<div class="col-md-3 padding-top-1">
+							{{$basicData->model}}
 							{!!Form::hidden('model',$basicData->model)!!}
-						
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Motor</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('engineNumberMirror',$complementaryData->engine_number,['placeholder' => 'Motor', 'class' =>'form-control','disabled']) !!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Plaqueta Serie</label>
+						<div class="col-md-3 padding-top-1">{!! Form::file('serialFile') !!}
+						<div class="red">{{$errors->first('serialFile')}}</div></div>
+						
+						<label class="col-md-3 padding-top-1">Lineas 1</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('line1',$rtc->line1,['placeholder' => 'Lineas 1', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('line1')}}</div>
+						</div>
+					</div>
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Nro Motor</label>
+						<div class="col-md-3 padding-top-1">{!! Form::file('engineFile') !!}
+						<div class="red">{{$errors->first('engineFile')}}</div></div>
+						<label class="col-md-3 padding-top-1">Lineas 2</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('line2',$rtc->line2,['placeholder' => 'Lineas 2', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('line2')}}</div>
+						</div>
+					</div>
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Nro Chasis</label>
+						<div class="col-md-3 padding-top-1">{!! Form::file('chassisFile') !!}
+						<div class="red">{{$errors->first('chassisFile')}}</div></div>
+						<label class="col-md-3 padding-top-1">Lineas 3</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('line3',$rtc->line3,['placeholder' => 'Lineas 3', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('line3')}}</div>
+						</div>
+					</div>
+					<div class="row">
+						
+						<label class="col-md-3 padding-top-1">Motor</label>
+						<div class="col-md-3 padding-top-1">
+							{{$complementaryData->engine_number}}
 							{!!Form::hidden('engineNumber',$complementaryData->engine_number)!!}
-						
+						</div>
+						<label class="col-md-3 padding-top-1">Nro Seguridad</label>
+						<div class="col-md-3 padding-top-1">{!! Form::file('securityNumber') !!}
+						<div class="red">{{$errors->first('securityNumber')}}</div></div>
 					</div>
-					<label class="col-md-3 padding-top-1">Nro Seguridad</label>
-					<div class="col-md-3 padding-top-1">{!! Form::file('securityNumber') !!}</div>
-					<label class="col-md-3 padding-top-1">Serie</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('serialNumberMirror',$complementaryData->serial_number,['placeholder' => 'Serie', 'class' =>'form-control','disabled']) !!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Serie</label>
+						<div class="col-md-3 padding-top-1">
+							{{$complementaryData->serial_number}}
 							{!!Form::hidden('serialNumber',$complementaryData->serial_number)!!}
-						
+						</div>
+						<label class="col-md-3 padding-top-1">Tarjeta Frontal</label>
+						<div class="col-md-3 padding-top-1">{!! Form::file('frontCard') !!}
+						<div class="red">{{$errors->first('frontCard')}}</div></div>
 					</div>
-					<label class="col-md-3 padding-top-1">Tarjeta Frontal</label>
-					<div class="col-md-3 padding-top-1">{!! Form::file('frontCard') !!}</div>
-					<label class="col-md-3 padding-top-1">Chasis</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('chassisNumber',$complementaryData->chassis_number,['placeholder' => 'Chasis', 'class' =>'form-control','disabled']) !!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Chasis</label>
+						<div class="col-md-3 padding-top-1">
+							{{$complementaryData->chassis_number}}
 							{!!Form::hidden('chassisNumber',$complementaryData->chassis_number)!!}
-						
+						</div>
+						<label class="col-md-3 padding-top-1">Tarjeta Posterior</label>
+						<div class="col-md-3 padding-top-1">{!! Form::file('backCard') !!}
+						<div class="red">{{$errors->first('backCard')}}</div></div>
 					</div>
-					<label class="col-md-3 padding-top-1">Tarjeta Posterior</label>
-					<div class="col-md-3 padding-top-1">{!! Form::file('backCard') !!}</div>
-					<label class="col-md-3 padding-top-1">Datos de Revisión</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('reviewData',$rtc->review_data,['placeholder' => 'Datos de revisión', 'class' =>'form-control']) !!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Datos de Revisión</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('reviewData',$rtc->review_data,['placeholder' => 'Datos de revisión', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('reviewData')}}</div>
+						</div>
+						<label class="col-md-3 padding-top-1">Motivo</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('reason',$rtc->reason,['placeholder' => 'Motivo', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('reason')}}</div>
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Motivo</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('reason',$rtc->reason,['placeholder' => 'Motivo', 'class' =>'form-control']) !!}
-					</div>
-					<label class="col-md-3 padding-top-1">Tec. Identificaciones</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('inspectorId',$inspectors,null,array('class' => 'form-control'))!!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Tec. Identificaciones</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::select('inspectorId',$inspectors,null,array('class' => 'form-control'))!!}
+						</div>
 					</div>
 					<label class="col-md-3 padding-top-1">Fotos</label>
-					<div class="col-md-3 padding-top-1">{!! Form::file('image1') !!}</div>
-					<div class="col-md-3 padding-top-1">{!! Form::file('image2') !!}</div>
-					<div class="col-md-3 padding-top-1">{!! Form::file('image3') !!}</div>
-					<div class="col-md-3 padding-top-1">{!! Form::file('image4') !!}</div>
-					<div class="col-md-3 padding-top-1">{!! Form::file('image5') !!}</div>
-					<div class="col-md-3 padding-top-1">{!! Form::file('image6') !!}</div>
+					<div class="col-md-3 padding-top-1">{!! Form::file('image1') !!}
+					<div class="red">{{$errors->first('image1')}}</div></div>
+					<div class="col-md-3 padding-top-1">{!! Form::file('image2') !!}
+					<div class="red">{{$errors->first('image2')}}</div></div>
+					<div class="col-md-3 padding-top-1">{!! Form::file('image3') !!}
+					<div class="red">{{$errors->first('image3')}}</div></div>
+					<div class="col-md-3 padding-top-1">{!! Form::file('image4') !!}
+					<div class="red">{{$errors->first('image4')}}</div></div>
+					<div class="col-md-3 padding-top-1">{!! Form::file('image5') !!}
+					<div class="red">{{$errors->first('image5')}}</div></div>
+					<div class="col-md-3 padding-top-1">{!! Form::file('image6') !!}
+					<div class="red">{{$errors->first('image6')}}</div></div>
+					
+					
+					
+					
+					
 					
 					<div class="col-md-12" >
 					<div class="col-md-3 offset-6 padding-top-1" align="center">

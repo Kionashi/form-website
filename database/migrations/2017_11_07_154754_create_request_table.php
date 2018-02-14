@@ -15,7 +15,7 @@ class CreateRequestTable extends Migration
     {
         Schema::create('request', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('status',['COMPLETED','PENDING']);
+            $table->enum('progress',['COMPLETED','PENDING']);
             $table->integer('last_step');
             $table->enum('status',['APPROVED','REJECTED']);
             $table->string('reject_reason')->nullable();

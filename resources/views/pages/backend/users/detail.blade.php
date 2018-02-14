@@ -21,7 +21,7 @@
 					</div>
 					<div class="col-md-12 padding-top-1">
 					<label class="">Estado</label>
-						@if($user->role->name == 'ACTIVE')
+						@if($user->status == 'ACTIVE')
 							Activo
 						@else
 							Inactivo

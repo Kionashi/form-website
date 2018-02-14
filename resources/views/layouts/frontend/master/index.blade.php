@@ -21,7 +21,10 @@
 
     <!-- Custom CSS -->
     {!!Html::style('/css/style.css')!!}
-
+    
+    <!-- Paginator -->
+    {!!Html::style('/css/jPages.css')!!}
+    
 </head>
 <body>
     <div class="container"><!-- NAVBAR -->
@@ -144,7 +147,10 @@
 
     <!-- Datepicker -->
     {!!Html::script('/js/bootstrap-datetimepicker.min.js')!!}
-
+    
+    <!-- Paginator -->
+    {!!Html::script('/js/jPages.min.js')!!}
+    
     <!-- Main script -->
     {!!Html::script('/js/main.js')!!}
     

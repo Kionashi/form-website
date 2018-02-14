@@ -2,7 +2,7 @@
 @section('content')
 	<div class="rounded clear-bg padding-2">
 		<h3 align="center">Datos B&aacute;sicos</h3>
-		@if ($errors->any())
+		<!-- @if ($errors->any())
 		    <div class="alert alert-danger">
 		        <ul>
 		            @foreach ($errors->all() as $error)
@@ -10,64 +10,84 @@
 		            @endforeach
 		        </ul>
 		    </div>
-		@endif
+		@endif -->
 
 		<fieldset>
-			{!!Form::open(array('route' => 'request/basic-data','files'=>true)) !!}
+			{!!Form::open(array('files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group">
-					<label class="col-md-3 padding-top-1">Placa</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('plate',$basicData->plate,['placeholder' => 'Placa', 'class' =>'form-control']) !!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Placa</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('plate',$basicData->plate,['placeholder' => 'Placa', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('plate')}}</div>
+						</div>
+						<label class="col-md-3 padding-top-1">Marca</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::select('brandId',$brands,$basicData->brand_id,array('id' => 'brandId', 'class' => 'form-control'))!!}
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Marca</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('brandId',$brands,$basicData->brand_id,array('id' => 'brandId', 'class' => 'form-control'))!!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Nombre</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('firstName',$basicData->first_name,['placeholder' => 'Nombre', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('firstName')}}</div>
+						</div>
+						<label class="col-md-3 padding-top-1">Apellido</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('lastName',$basicData->last_name,['placeholder' => 'Apellido', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('lastName')}}</div>
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Nombre</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('firstName',$basicData->first_name,['placeholder' => 'Nombre', 'class' =>'form-control']) !!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Documento</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('document',$basicData->document,['placeholder' => 'Documento', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('document')}}</div>
+						</div>
+						<label class="col-md-3 padding-top-1">Lugar Expedición</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('expeditionPlace',$basicData->expedition_place,['placeholder' => 'Lugar Expedición', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('expeditionPlace')}}</div>
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Apellido</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('lastName',$basicData->last_name,['placeholder' => 'Apellido', 'class' =>'form-control']) !!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Teléfono</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('phone',$basicData->phone,['placeholder' => 'Teléfono', 'class' =>'form-control']) !!}
+							<div class="red">{{$errors->first('phone')}}</div>
+						</div>
+						<!-- <label class="col-md-3 padding-top-1">Tipo de Usuario</label> -->
+						<div class="col-md-3 padding-top-1" style="display: none;">
+							{!! Form::select('userType',$userTypes,$basicData->user_type,array('class' => 'form-control'))!!}
+						</div>
+						<label class="col-md-3 padding-top-1">Servicio</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::select('serviceId',$services,$serviceId,array('class' => 'form-control'))!!}
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Documento</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('document',$basicData->document,['placeholder' => 'Documento', 'class' =>'form-control']) !!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Modelo</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::select('model',$models,$basicData->model,array('id' => 'model', 'class' => 'form-control'))!!}
+						</div>
+						<label class="col-md-3 padding-top-1">Finalización SOAT</label>
+						<div class="col-md-3  padding-top-1 input-group date" id='finalizationSoat'>
+							{!!Form::text('finalizationSoat',$basicData->finalization_soat,array('placeholder' => 'Finalización SOAT', 'class' => 'form-control')) !!}<span class="input-group-addon">
+				                    <span class="glyphicon glyphicon-calendar"></span>
+				                </span>
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Lugar Expedición</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('expeditionPlace',$basicData->expedition_place,['placeholder' => 'Lugar Expedición', 'class' =>'form-control']) !!}
+					<div class="row">
+						<div class="red col-md-3 col-md-offset-9">{{$errors->first('finalizationSoat')}}</div>
 					</div>
-					
-					<label class="col-md-3 padding-top-1">Teléfono</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('phone',$basicData->phone,['placeholder' => 'Teléfono', 'class' =>'form-control']) !!}
-					</div>
-					<label class="col-md-3 padding-top-1">Tipo de Usuario</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('userType',$userTypes,$basicData->user_type,array('class' => 'form-control'))!!}
-					</div>
-					<label class="col-md-3 padding-top-1">Servicio</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('serviceId',$services,$serviceId,array('class' => 'form-control'))!!}
-					</div>
-					<label class="col-md-3 padding-top-1">Modelo</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('model',$models,$basicData->model,array('id' => 'model', 'class' => 'form-control'))!!}
-					</div>
-					<label class="col-md-3 padding-top-1">Finalización SOAT</label>
-					<div class="col-md-3 padding-top-1 input-group date" id='finalizationSoat'>
-						{!!Form::text('finalizationSoat',$basicData->finalization_soat,array('placeholder' => 'Finalización SOAT', 'class' => 'form-control')) !!}<span class="input-group-addon">
-			                    <span class="glyphicon glyphicon-calendar"></span>
-			                </span>
-						
-					</div>
-					<label class="col-md-3 padding-top-1">Privacidad de datos</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::file('dataPrivacy') !!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Privacidad de datos</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::file('dataPrivacy') !!}
+							<div class="red">{{$errors->first('dataPrivacy')}}</div>
+						</div>
 					</div>
 					<div class="col-md-12">
 						
@@ -135,6 +155,8 @@
 					}
 				});
             });
+            
+            $('#brandId').trigger('change');
         });
     </script>
 @stop  

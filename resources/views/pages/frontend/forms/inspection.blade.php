@@ -2,7 +2,7 @@
 @section('content')
 	<div class="rounded clear-bg padding-2">
 		<h3 align="center">Inspección</h3>
-		@if ($errors->any())
+		<!-- @if ($errors->any())
 			<div class="alert alert-danger">
 				<ul>
 					@foreach ($errors->all() as $error)
@@ -10,52 +10,58 @@
 					@endforeach
 				</ul>
 			</div>
-		@endif
+		@endif -->
 		<fieldset>
-			{!!Form::open(array('route' => 'request/inspection','files'=>true)) !!}
+			{!!Form::open(array('files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequest->id)!!}
 			{!!Form::hidden('fasecoldaCode',$fasecoldaCode,array('id' => 'fasecoldaCode'))!!}
 			{!!Form::hidden('fasecoldaValue',$fasecoldaValue,array('id' => 'fasecoldaValue'))!!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group">
-					<label class="col-md-3 padding-top-1">Placa</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('plateMirror',$serviceRequest->basicData->plate,['placeholder' => 'Placa', 'class' =>'form-control','disabled']) !!}
-						{!!Form::hidden('plate',$serviceRequest->basicData->plate)!!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Placa</label>
+						<div class="col-md-3 padding-top-1">
+							{{$serviceRequest->basicData->plate}}
+							{!!Form::hidden('plate',$serviceRequest->basicData->plate)!!}
+						</div>
+						<label class="col-md-3 padding-top-1">Referencia 1</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::select('referenceId1',$firstReferences,$inspection->first_reference_id,array('class' => 'form-control'))!!}
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Referencia 1</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('referenceId1',$firstReferences,$inspection->first_reference_id,array('class' => 'form-control'))!!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Referencia 2</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::select('referenceId2',$secondReferences,$inspection->second_reference_id,array('class' => 'form-control'))!!}
+						</div>
+						<label class="col-md-3 padding-top-1">Valor Fasecolda</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('fasecoldaValueMirror',$fasecoldaValue,['disabled', 'class' =>'form-control', 'id' => 'fasecoldaValueMirror']) !!} 
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Referencia 2</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('referenceId2',$secondReferences,$inspection->second_reference_id,array('class' => 'form-control'))!!}
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Código Fasecolda</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('fasecoldaCodeMirror',$fasecoldaCode,['placeholder' => 'Código Fasecolda', 'class' =>'form-control','disabled','id' => 'fasecoldaCodeMirror']) !!} 
+						</div>
+						<label class="col-md-3 padding-top-1">Descuento</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('discount',$inspection->discount,['placeholder' => 'Descuento', 'class' =>'form-control']) !!} 
+							<div class="red">{{$errors->first('discount')}}</div>
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Valor Fasecolda</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('fasecoldaValueMirror',$fasecoldaValue,['disabled', 'class' =>'form-control', 'id' => 'fasecoldaValueMirror']) !!} 
+					<div class="row">
+						<label class="col-md-3 padding-top-1">Kilometraje</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::text('mileage',$inspection->mileage,['placeholder' => 'Kilometraje', 'class' =>'form-control']) !!} 
+							<div class="red">{{$errors->first('mileage')}}</div>
+							
+						</div>
+						<label class="col-md-3 padding-top-1">Aprobación</label>
+						<div class="col-md-3 padding-top-1">
+							{!! Form::select('approval',['Aprobado' => 'Aprobado', 'Rechazado' => 'Rechazado'],$inspection->approval,array('class' => 'form-control'))!!}
+						</div>
 					</div>
-					<label class="col-md-3 padding-top-1">Código Fasecolda</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('fasecoldaCodeMirror',$fasecoldaCode,['placeholder' => 'Código Fasecolda', 'class' =>'form-control','disabled','id' => 'fasecoldaCodeMirror']) !!} 
-					</div>
-					<label class="col-md-3 padding-top-1">Valoración Visual</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::select('visualValueId',$visualValueSelect,null,array('id'=>'visualValue','class' => 'form-control'))!!}
-					</div>
-					<label class="col-md-3 padding-top-1">Descuento</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('discount',$inspection->discount,['placeholder' => 'Descuento', 'class' =>'form-control']) !!} 
-					</div>
-					<label class="col-md-3 padding-top-1">Kilometraje</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('mileage',$inspection->mileage,['placeholder' => 'Kilometraje', 'class' =>'form-control']) !!} 
-					</div>
-					<label class="col-md-3 padding-top-1">Aprobación</label>
-					<div class="col-md-3 padding-top-1">
-						{!! Form::text('approval',$inspection->approval,['placeholder' => 'Aprobación', 'class' =>'form-control']) !!} 
-					</div>
-					
 					<h3 class="col-md-12 padding-top-1" align="center">Carga Fotos</h3>
 					<div class="col-md-3 padding-top-1">{!! Form::file('image1') !!}</div>
 					<div class="col-md-3 padding-top-1">{!! Form::file('image2') !!}</div>
@@ -65,9 +71,14 @@
 					<div class="col-md-3 padding-top-1">{!! Form::file('image6') !!}</div>
 					
 					<h3 class="col-md-12 padding-top-1" align="center">Valoración visual</h3>
-					<div id="visualValueFieldsContainer" class="col-md-12">
+					<ul class="nav nav-tabs">
 						@foreach($visualValues as $visualValue)
-							<div id="visual-value-{{$visualValue->id}}" style="display: none;">
+							<li><a data-toggle="tab" class="black" href="#visual-value-{{$visualValue->id}}">{{$visualValue->name}}</a></li>
+						@endforeach
+					</ul>
+					<div id="visualValueFieldsContainer" class="col-md-12 tab-content">
+						@foreach($visualValues as $visualValue)
+							<div id="visual-value-{{$visualValue->id}}" class="tab-pane fade">
 								<h3 class="col-md-12 padding-top-1" align="center">{{$visualValue->name}}</h3>
 								@foreach($visualValue->visualValueFields as $visualValueField)
 									<label class="col-md-3 padding-top-1">{{$visualValueField->name}}</label>
@@ -109,10 +120,21 @@
 						</div>
 					</div>
 					<h3 class="col-md-12 padding-top-1" align="center">Novedades</h3>
-					@foreach($novelties as $novelty)
-						<div class="col-md-9">{{$novelty->name}}</div>
-						<div class="col-md-3">{!! Form::checkbox('novelty-'.$novelty->id,null,$novelty->selected) !!}</div>
-					@endforeach
+					<!-- <div class="col-md-12">paginas: {{$noveltiesPages}}
+					resto: {{$noveltiesRest}}
+					conteo: {{$noveltiesCount}}
+					paginacion: {{$noveltiesPagination}}
+					</div> -->
+					<div id="novelties">
+						@foreach($novelties as $novelty)
+							<div class="page-row">
+								<div class="col-md-9">{{$novelty->name}}</div>
+								<div class="col-md-3">{!! Form::checkbox('novelty-'.$novelty->id,null,$novelty->selected) !!}</div>
+							</div>
+						@endforeach
+					</div>
+					
+					
 					<div class="col-md-12" >
 					<div class="col-md-3 padding-top-1" align="center">
 						<a class="btn btn-primary btn-block" href="{{route('request/return/',$serviceRequest->id)}}">Regresar</a>
@@ -129,8 +151,26 @@
 	</div>
 @endsection
 @section('custom_script')
+	{!!Html::script('/js/jquery.easyPaginate.js')!!}
 	<script type="text/javascript">
 		$(document).ready(function(){
+			
+			// Pagination
+			
+			var itemsCount = {{$noveltiesCount }};
+			var noveltiesPagination = {{$noveltiesPagination}};
+			// var selector = {{$novelties}};
+			// $("div.holder").jPages({
+			//     containerID : "itemContainer"
+			//   });
+			
+		    $('#novelties').easyPaginate({
+		        paginateElement: '.page-row',
+		        elementsPerPage: noveltiesPagination,
+		        effect: 'climb'
+		    });
+
+			
 			var i = {{$accessoriesCount}};
 			$('#addAccesoryButton').click(function(){
 				$('#accessoriesContainer').append(''+

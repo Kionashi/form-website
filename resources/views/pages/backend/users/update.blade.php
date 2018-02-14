@@ -28,7 +28,7 @@
 					</div>	
 					<label class="padding-top-1 col-md-12">Rol de usuario</label>
 					<div class="col-md-12">
-						{!! Form::select('roleId',$roles,$user->roleId,array('class' => 'form-control'))!!}	
+						{!! Form::select('roleId',$roles,$user->role->id,array('class' => 'form-control'))!!}	
 					</div>
 					<label class="padding-top-1 col-md-12">Estado</label>
 					<div class="col-md-12">

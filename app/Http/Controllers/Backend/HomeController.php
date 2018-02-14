@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Backend;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\AppController;
+use App\Http\Controllers\BackendController;
 
-class HomeController extends AppController
+class HomeController extends BackendController
 {
     /**
      * Create a new controller instance.

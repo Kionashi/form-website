@@ -250,7 +250,7 @@
 			<tr><td colspan="4" style="color: white;">.</td></tr>
 			
 			<tr>
-				<td style="text-align: left !important;" colspan="4">La regrabación se efectúa a solicitud del interesado: {{$serviceRequest->basicData->first_name}} {{$serviceRequest->basicData->last_name}} Identificado con Cedula numero {{$serviceRequest->basicData->document}} reside en la dirección {{$serviceRequest->basicData->expedition_place}}, Telefono {{$serviceRequest->basicData->document}}, Motivo: POR PERDIDA </td>
+				<td style="text-align: left !important;" colspan="4">La regrabación se efectúa a solicitud del interesado: {{$serviceRequest->basicData->first_name}} {{$serviceRequest->basicData->last_name}} Identificado con Cedula numero {{$serviceRequest->basicData->document}} reside en la dirección {{$serviceRequest->basicData->expedition_place}}, Telefono {{$serviceRequest->basicData->document}}, Motivo: {{$serviceRequest->recording->description}} </td>
 			</tr>
 			<tr><td colspan="4" style="color: white;">.</td></tr>
 			<tr><td colspan="4" style="color: white;">.</td></tr>

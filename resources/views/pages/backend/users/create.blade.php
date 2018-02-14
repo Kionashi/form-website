@@ -17,7 +17,7 @@
 				<legend>Datos Personales</legend>
 	
 				<div class="form-group">
-				<label class="padding-top-1 col-md-12">Nombre</label>
+					<label class="padding-top-1 col-md-12">Nombre</label>
 					<div class="col-md-12">
 						{!! Form::text('name',old('name'),array('class' => 'form-control','placeholder' => 'Nombre'))!!}
 					</div>
@@ -37,16 +37,26 @@
 					<div class="col-md-12">
 						{!! Form::select('roleId',$roles,old('roleId'),array('class' => 'form-control'))!!}	
 					</div>
+					<label class="padding-top-1 col-md-12">Empresa</label>
+					<div class="col-md-12">
+						{!! Form::text('company',old('company'),array('class' => 'form-control','placeholder' => 'Si el usuario es externo, incluir este campo'))!!}
+					</div>
 					<label class="padding-top-1 col-md-12">Estado</label>
 					<div class="col-md-12">
-						{!! Form::select('status',$status,old('status'),array('class' => 'form-control'))!!}		
+						{!! Form::select('status',$status,old('status'),array('class' => 'form-control'))!!}
 					</div>
 				</div>
-				
 			<br>
 			<br>
 			<div>
-				<div class="col-md-12 padding-top-1"><input class="btn btn-primary" type="submit" name="" value="Enviar"></div>
+				<div class="col-md-12 padding-top-1">
+					<div class="col-md-3">
+						<a class="btn btn-primary btn-block" href="{{route('admin/users')}}">Regresar</a>
+					</div>
+					<div class="col-md-3">
+						<input class="btn btn-success btn-block" type="submit" name="" value="Enviar">
+					</div>
+				</div>
 			</div>
 		{!! Form::close() !!}
 	</div>
