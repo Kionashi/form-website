@@ -70,7 +70,8 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web']],function
     
     Route::get('/peticion/servicios/actuales/placa/{plate}','RequestController@getCurrentServices')->name('request/get-current-services/');
      Route::get('/peticion/servicio/placa/{plate}','RequestController@getServices')->name('request/get-services/');
-     
+     Route::get('/peticion/referencia/{firstReference}/solicitud/{serviceRequestId}','RequestController@getReferences')->name('request/get-references/');
+     Route::get('/peticion/fasecolda/referencia1/{firstReference}/referencia2/{secondReference}/solicitud/{serviceRequestId}','RequestController@getFasecolda')->name('request/get-fasecolda/');
     //Servicios Actuales
     Route::get('/servicios-actuales/','HomeController@index')->name('current-services');
     Route::post('/servicios-actuales/','RequestController@goCurrentServices')->name('current-services/');
@@ -93,15 +94,14 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web','excludeEx
     Route::get('/peticion/{serviceRequestId}/regrabacion','RequestController@goRecording')->name('request/recording/');
     Route::post('/peticion/{serviceRequestId}/regrabacion','RequestController@processRecording')->name('request/recording');
     
-    //Control
-    Route::get('/peticion/{serviceRequestId}/control','RequestController@goControl')->name('request/control/');
-    Route::post('/peticion/{serviceRequestId}/control','RequestController@processControl')->name('request/control');
     
      //RTC
     Route::get('/peticion/{serviceRequestId}/rtc','RequestController@goRTC')->name('request/rtc/');
     Route::post('/peticion/{serviceRequestId}/rtc','RequestController@processRTC')->name('request/rtc');
     
-    
+    //Control
+    Route::get('/peticion/{serviceRequestId}/control','RequestController@goControl')->name('request/control/')->middleware('excludeInspector');
+    Route::post('/peticion/{serviceRequestId}/control','RequestController@processControl')->name('request/control')->middleware('excludeInspector');
     
     //Inspección
     Route::get('/peticion/{serviceRequestId}/inspection','RequestController@goInspection')->name('request/inspection/');
@@ -112,3 +112,4 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web','excludeEx
     Route::get('/test','RequestController@goTest')->name('test');
     Route::post('/testing','RequestController@processTest')->name('testing');
 });
+

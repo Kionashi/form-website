@@ -635,13 +635,14 @@ class RequestController extends AppController
             ->with('rtc.vehicleClass')
             ->with('inspection.accessories')
             ->with('inspection.novelties')
+            ->with('inspection.fasecoldaYearValue')
             ->with('control')
             ->find($serviceRequestId)
             ;
         //Amount of fields that will be into the visual value tables
-        $maxVisualValueFields = 10;
+        $maxVisualValueFields = 7;
         
-        // dump($serviceRequest->inspection);die;
+        // dump($serviceRequest->inspection->fasecoldaYearValue->value);die;
         if($serviceRequest->inspection) {
             
             $visualValues = VisualValue::with('visualValueFields')->get();
@@ -710,9 +711,10 @@ class RequestController extends AppController
         // dump($serviceRequest->recording);die;
         $serviceRequest->now = $date;
         $data =array('serviceRequest' => $serviceRequest);
-        $pdf = PDF::loadView('pages.frontend.reports.print', $data);
+        $pdf = PDF::loadView('pages.frontend.reports.print3', $data);
         // dump($pdf);die;
         $pdfName = $serviceRequest->basicData->plate.'-'.$serviceRequest->service->name.'.pdf';
+        $pdf->setPaper('legal');
         return $pdf->download($pdfName);
     	return redirect()->route('/');
     	
@@ -744,6 +746,7 @@ class RequestController extends AppController
     		->with('fasecolda')
     		->whereHas('fasecolda',function($query) use ($basicData,$complementaryData){
     			$query->where('brand_id',$basicData->brand_id)
+                    ->where('cylinder_id',$complementaryData->cylinder_id)
 		    		->where('fuel_type_id',$complementaryData->fuel_type_id)
 		    		->where('vehicle_service_id',$complementaryData->service_id)
 					;
@@ -774,6 +777,7 @@ class RequestController extends AppController
     		->whereHas('fasecolda',function($query) use ($basicData,$complementaryData,$firstReferenceId){
     			$query->where('brand_id',$basicData->brand_id)
 		    		->where('fuel_type_id',$complementaryData->fuel_type_id)
+                    ->where('cylinder_id',$complementaryData->cylinder_id)
 		    		->where('vehicle_service_id',$complementaryData->service_id)
 		    		->where('first_reference_id',$firstReferenceId)
 					;
@@ -795,6 +799,7 @@ class RequestController extends AppController
     	$tentativeFasecolda = Fasecolda::where('first_reference_id',$firstReferenceId)
     		->where('second_reference_id',$secondReferenceId)
     		->where('brand_id',$basicData->brand_id)
+            ->where('cylinder_id',$complementaryData->cylinder_id)
     		->where('fuel_type_id',$complementaryData->fuel_type_id)
     		->where('vehicle_service_id',$complementaryData->service_id)
     		->first();
@@ -1657,18 +1662,21 @@ class RequestController extends AppController
     	}
     	// dump($accessories);die;
     	//Add new accessories from input data
-    	foreach($accessories as $accesoryInput) {
-    		if($accesoryInput['type']) {
-    			
-	    		$accesory = new Accesory();
-	    		$accesory->type = $accesoryInput['type'];
-	    		$accesory->reference = $accesoryInput['brand'];
-	    		$accesory->amount = $accesoryInput['amount'];
-	    		$accesory->value = $accesoryInput['value'];
-	    		$accesory->inspection_id = $inspection->id;
-	    		$accesory->save();
-    		}
-    	}
+        if($accessories) {
+            
+        	foreach($accessories as $accesoryInput) {
+        		if($accesoryInput['type']) {
+        			
+    	    		$accesory = new Accesory();
+    	    		$accesory->type = $accesoryInput['type'];
+    	    		$accesory->reference = $accesoryInput['brand'];
+    	    		$accesory->amount = $accesoryInput['amount'];
+    	    		$accesory->value = $accesoryInput['value'];
+    	    		$accesory->inspection_id = $inspection->id;
+    	    		$accesory->save();
+        		}
+        	}
+        }
     	
     	if($image1) {
     		$frontCardExtension = $image1->getClientOriginalExtension();
@@ -1898,8 +1906,7 @@ class RequestController extends AppController
     public function getServices($plate){
         
         
-        $serviceRequests = ServiceRequest::all()
-            ->with('basicData')
+        $serviceRequests = ServiceRequest::with('basicData')
             ->get()
             ;
             $services = array();
@@ -1952,6 +1959,65 @@ class RequestController extends AppController
     	}
     	// dump($uniqueModels);
     	return $uniqueModels;
+    }
+    
+    public function getReferences($firstReference, $serviceRequestId) {
+        
+        $serviceRequest = ServiceRequest::find($serviceRequestId);
+        $fasecoldaYearValues = FasecoldaYearValue::with('fasecolda')
+            ->where('year',$serviceRequest->basicData->model)
+            ->whereHas('fasecolda',function($query) use ($serviceRequest, $firstReference){
+                $query->where('brand_id',$serviceRequest->basicData->brand_id)
+                    ->where('first_reference_id',$firstReference)
+                    ->where('cylinder_id',$serviceRequest->complementaryData->cylinder_id)
+                    ->where('vehicle_service_id',$serviceRequest->complementaryData->service_id)
+                    ->where('fuel_type_id',$serviceRequest->complementaryData->fuel_type_id)
+                    ;
+            })
+            ->orderBy('year','desc')
+            ->get()
+            ;
+        $references = array();
+        // $models[] ="<option value="."\"".$fasecoldaYearValues->count()."\"".">".$fasecoldaYearValues->count()."</option>";
+        
+        foreach($fasecoldaYearValues as $fasecoldaYearValue){
+            $references[] = "<option value="."\"".$fasecoldaYearValue->fasecolda->second_reference_id."\"".">".Reference::find($fasecoldaYearValue->fasecolda->second_reference_id)->name."</option>";
+        };
+        
+        $references = array_unique($references);
+        $uniqueModels = array();
+        foreach($references as $uniqueModel){
+            $uniqueModels[] = $uniqueModel;
+        }
+        // dump($uniqueModels);die;
+        return $uniqueModels;
+    }
+    
+    public function getFasecolda($firstReference, $secondReference, $serviceRequestId) {
+        $serviceRequest = ServiceRequest::find($serviceRequestId);
+        $fasecoldaYearValue = FasecoldaYearValue::with('fasecolda')
+            ->where('year',$serviceRequest->basicData->model)
+            ->whereHas('fasecolda',function($query) use ($serviceRequest, $firstReference,$secondReference){
+                $query->where('brand_id',$serviceRequest->basicData->brand_id)
+                    ->where('first_reference_id',$firstReference)
+                    ->where('second_reference_id',$secondReference)
+                    ->where('cylinder_id',$serviceRequest->complementaryData->cylinder_id)
+                    ->where('vehicle_service_id',$serviceRequest->complementaryData->service_id)
+                    ->where('fuel_type_id',$serviceRequest->complementaryData->fuel_type_id)
+                    ;
+            })
+            ->orderBy('year','desc')
+            ->first()
+            ;
+        // dump($fasecoldaYearValue);die;
+            $fasecolda = array();
+            if($fasecoldaYearValue){
+                $fasecolda['code'] = $fasecoldaYearValue->fasecolda->code;
+                $fasecolda['value'] = $fasecoldaYearValue->value;
+                // $fasecolda['fasecolda'] = $fasecoldaYearValue->fasecolda;
+            }
+        
+        return $fasecolda;
     }
     
     public function getFuelTypes($model, $brandId,$cylinderId,$vehicleServiceId) {

@@ -149,11 +149,6 @@
 					<div class="col-md-3 padding-top-1">{!! Form::file('image6') !!}
 					<div class="red">{{$errors->first('image6')}}</div></div>
 					
-					
-					
-					
-					
-					
 					<div class="col-md-12" >
 					<div class="col-md-3 offset-6 padding-top-1" align="center">
 						<a class="btn btn-primary btn-block" href="{{route('request/return/',$serviceRequestId)}}">Regresar</a>

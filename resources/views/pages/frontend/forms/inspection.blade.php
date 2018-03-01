@@ -13,7 +13,7 @@
 		@endif -->
 		<fieldset>
 			{!!Form::open(array('files'=>true)) !!}
-			{!!Form::hidden('serviceRequestId',$serviceRequest->id)!!}
+			{!!Form::hidden('serviceRequestId',$serviceRequest->id, array('id' => 'serviceRequestId'))!!}
 			{!!Form::hidden('fasecoldaCode',$fasecoldaCode,array('id' => 'fasecoldaCode'))!!}
 			{!!Form::hidden('fasecoldaValue',$fasecoldaValue,array('id' => 'fasecoldaValue'))!!}
 				<!-- <legend>Datos Personales</legend> -->
@@ -26,13 +26,13 @@
 						</div>
 						<label class="col-md-3 padding-top-1">Referencia 1</label>
 						<div class="col-md-3 padding-top-1">
-							{!! Form::select('referenceId1',$firstReferences,$inspection->first_reference_id,array('class' => 'form-control'))!!}
+							{!! Form::select('referenceId1',$firstReferences,$inspection->first_reference_id,array('class' => 'form-control', 'id' =>'firstReference'))!!}
 						</div>
 					</div>
 					<div class="row">
 						<label class="col-md-3 padding-top-1">Referencia 2</label>
 						<div class="col-md-3 padding-top-1">
-							{!! Form::select('referenceId2',$secondReferences,$inspection->second_reference_id,array('class' => 'form-control'))!!}
+							{!! Form::select('referenceId2',$secondReferences,$inspection->second_reference_id,array('class' => 'form-control','id' => 'secondReference'))!!}
 						</div>
 						<label class="col-md-3 padding-top-1">Valor Fasecolda</label>
 						<div class="col-md-3 padding-top-1">
@@ -154,6 +154,87 @@
 	{!!Html::script('/js/jquery.easyPaginate.js')!!}
 	<script type="text/javascript">
 		$(document).ready(function(){
+			
+			$('#firstReference').change(function(){
+	            // Visual value id
+				var firstReference = $('#firstReference').val();
+				var serviceRequestId = $('#serviceRequestId').val();
+				var getUrl = window.location;
+				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+				var requestUrl = baseUrl + "/referencia/"+firstReference+"/solicitud/"+serviceRequestId;
+				console.log(requestUrl);
+				
+	            // Get visual value fields
+				$.ajax({
+					type: "GET",
+					url: requestUrl,
+					success: function(models) {
+						// Clear visual value fields container
+						$('#secondReference').empty();
+						console.log('xxxx');
+						console.log(models);
+						models.forEach(function(model){
+							$('#secondReference').append(model);
+							
+						});
+						$('#secondReference').trigger('change');	
+						
+						// for each(var model in models) {
+						// // 	// Add label to value fields
+						// 	console.log(model);
+						// }	
+						
+					},
+					error: function(e) {
+						console.log('error');
+						console.log(e);
+					}
+				});
+            });
+            
+            $('#firstReference').trigger('change');
+			
+			
+			//Update the fasecolda code and the fasecolda value
+			$('#secondReference').change(function(){
+	            // Visual value id
+	            var firstReference = $('#firstReference').val();
+				var secondReference = $('#secondReference').val();
+				var serviceRequestId = $('#serviceRequestId').val();
+				var getUrl = window.location;
+				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+				var requestUrl = baseUrl + "/fasecolda/referencia1/"+firstReference+"/referencia2/"+secondReference+"/solicitud/"+serviceRequestId;
+				console.log(requestUrl);
+				
+	            // Get visual value fields
+				$.ajax({
+					type: "GET",
+					url: requestUrl,
+					success: function(fasecolda) {
+						// Clear visual value fields container
+						console.log('xxxx');
+						console.log(fasecolda);
+						document.getElementById('fasecoldaCodeMirror').value = fasecolda['code'];
+						document.getElementById('fasecoldaCode').value = fasecolda['code'];
+						document.getElementById('fasecoldaValue').value = fasecolda['value'];
+						document.getElementById('fasecoldaValueMirror').value = fasecolda['value'];
+						
+							
+						
+						// for each(var model in models) {
+						// // 	// Add label to value fields
+						// 	console.log(model);
+						// }	
+						
+					},
+					error: function(e) {
+						console.log('error');
+						console.log(e);
+					}
+				});
+            });
+            
+            $('#secondReference').trigger('change');
 			
 			// Pagination
 			

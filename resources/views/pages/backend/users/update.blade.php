@@ -25,10 +25,14 @@
 					<label class="padding-top-1 col-md-12">Correo</label>
 					<div class="col-md-12">
 						{!! Form::email('email',$user->email,array('class' => 'form-control','placeholder' => 'correo@mail.com'))!!}
-					</div>	
+					</div>
 					<label class="padding-top-1 col-md-12">Rol de usuario</label>
 					<div class="col-md-12">
 						{!! Form::select('roleId',$roles,$user->role->id,array('class' => 'form-control'))!!}	
+					</div>
+					<label class="padding-top-1 col-md-12">Empresa</label>
+					<div class="col-md-12">
+						{!! Form::text('company',$user->company,array('class' => 'form-control','placeholder' => 'Si el usuario es externo, incluir este campo'))!!}
 					</div>
 					<label class="padding-top-1 col-md-12">Estado</label>
 					<div class="col-md-12">

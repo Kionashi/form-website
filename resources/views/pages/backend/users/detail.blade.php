@@ -20,6 +20,10 @@
 						{{$user->role->name}}	
 					</div>
 					<div class="col-md-12 padding-top-1">
+					<label class="">Empresa</label>
+						{{$user->company}}
+					</div>
+					<div class="col-md-12 padding-top-1">
 					<label class="">Estado</label>
 						@if($user->status == 'ACTIVE')
 							Activo

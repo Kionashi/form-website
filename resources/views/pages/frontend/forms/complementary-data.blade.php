@@ -218,7 +218,7 @@
 				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
 				
 				//request url
-				var requestUrl = baseUrl + "/peticion/servicio/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder;
+				var requestUrl = baseUrl + "/servicio/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder;
 				console.log(requestUrl);
 				
 	            // Make the request
@@ -249,7 +249,7 @@
 						var cylinder = $('#cylinder').val();
 		            	
 						//build new request url
-						var requestUrl = baseUrl + "/peticion/combustible/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder+"/servicio/"+vehicleService;
+						var requestUrl = baseUrl + "/combustible/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder+"/servicio/"+vehicleService;
 						console.log(requestUrl);
 						
 			            // Make the request
@@ -308,7 +308,7 @@
 				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
 				
 				//build new request url
-				var requestUrl = baseUrl + "/peticion/combustible/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder+"/servicio/"+vehicleService;
+				var requestUrl = baseUrl + "/combustible/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder+"/servicio/"+vehicleService;
 				console.log(requestUrl);
             	
 	            // Make the request
