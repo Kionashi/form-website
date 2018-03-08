@@ -67,6 +67,8 @@ class UsersController extends BackendController
     
     public function register(Request $request) {
         
+        
+        // dump('entre');die;
 		// Validar esta funcion me regresa a la vista anterior con un mensaje de error si no cumple con las reglas de validacion
 		$this->validate($request, $this->signUpValidationRules);
 		

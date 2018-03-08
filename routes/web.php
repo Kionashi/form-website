@@ -99,9 +99,6 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web','excludeEx
     Route::get('/peticion/{serviceRequestId}/rtc','RequestController@goRTC')->name('request/rtc/');
     Route::post('/peticion/{serviceRequestId}/rtc','RequestController@processRTC')->name('request/rtc');
     
-    //Control
-    Route::get('/peticion/{serviceRequestId}/control','RequestController@goControl')->name('request/control/')->middleware('excludeInspector');
-    Route::post('/peticion/{serviceRequestId}/control','RequestController@processControl')->name('request/control')->middleware('excludeInspector');
     
     //Inspección
     Route::get('/peticion/{serviceRequestId}/inspection','RequestController@goInspection')->name('request/inspection/');
@@ -111,5 +108,13 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web','excludeEx
     //testing
     Route::get('/test','RequestController@goTest')->name('test');
     Route::post('/testing','RequestController@processTest')->name('testing');
+});
+
+//CONTROL
+Route::group(['namespace' => 'Frontend','middleware' => ['auth','web','isController']],function(){
+    
+    //Control
+    Route::get('/peticion/{serviceRequestId}/control','RequestController@goControl')->name('request/control/')->middleware('excludeInspector');
+    Route::post('/peticion/{serviceRequestId}/control','RequestController@processControl')->name('request/control')->middleware('excludeInspector');
 });
 

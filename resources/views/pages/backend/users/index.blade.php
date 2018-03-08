@@ -1,5 +1,8 @@
 @extends('layouts.backend.master.index')
 @section('content')
+@if(isset($success))
+<h4 style="color:green;">{{$success}}</h4>
+@endif
 	<div class="col-md-4 col-lg-4 col-sm-12">
 	
 	{!!Form::open(array('route' => 'admin/user/search/')) !!}
