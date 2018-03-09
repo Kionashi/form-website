@@ -18,11 +18,14 @@ class isAdmin
     {
         $user = Auth::user();
         // dump($user);die;
-        
-        if($user->role->name == 'ADMIN'){
-            return $next($request);
-        }else{
-            return redirect()->route('/');
+        if($user){
+            
+            if($user->role->name == 'ADMIN'){
+                return $next($request);
+            }else{
+                return redirect()->route('/');
+            }
         }
+        return redirect()->route('/');
     }
 }

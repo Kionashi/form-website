@@ -29,8 +29,14 @@ Route::group(['namespace' => 'Backend','middleware' => ['web','isAdmin']],functi
     Route::post('/administrador/usuario/cambiar-contrasena', 'UsersController@editPassword')->name('admin/user/edit-password/');
     Route::get('/administrador/usuario/cambiar-contrasena/{id}', 'UsersController@newPassword')->name('admin/user/new-password/');
     Route::post('/administrador/usuario/buscar', 'UsersController@search')->name('admin/user/search/');
-
-
+    
+    //Administrador de documentos
+    Route::get('administrador/documentos','DocumentsController@index')->name('admin/documents');
+    Route::get('administrador/documentos/1','DocumentsController@demo1')->name('admin/documents/1');
+    Route::get('administrador/documentos/2','DocumentsController@demo2')->name('admin/documents/2');
+    Route::get('administrador/documentos/3','DocumentsController@demo3')->name('admin/documents/3');
+    Route::get('administrador/documentos/descarga/{id}','DocumentsController@download')->name('admin/documents/download/');
+    
     
     
 });

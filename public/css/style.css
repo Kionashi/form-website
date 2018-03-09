@@ -109,3 +109,25 @@
 .height-58 {
 	height:58px;
 }
+.centered {
+	text-align: center;
+}
+
+.red {
+	color: red !important;
+}
+
+.yellow {
+	color: #ffc600 !important;
+}
+
+.size-70 {
+	font-size: 70px;	
+}
+.undecorated:hover {
+	text-decoration: none;
+}
+
+.icon-text {
+	margin-top: -3px;
+}

@@ -18,10 +18,14 @@ class excludeInspector
     {
         $user = Auth::user();
         // dump($user);die;
-        if ($user->role->name == 'INSPECTOR') {
-            return redirect()->route('/');
+        if($user){
+            if ($user->role->name == 'INSPECTOR') {
+                return redirect()->route('/');
+            }else{
+                return $next($request);
+            }
         }else{
-            return $next($request);
+            return redirect()->route('/');
         }
     }
 }

@@ -58,6 +58,9 @@
                                 <li><a href="{{route('admin/users')}}">Consultar</a></li>
                             </ul>
                         </li>
+                        <li class="navbar" style="color: white" >
+                            <a href="{{route('admin/documents')}}">Administrador de archivos</a>
+                        </li>
 
                         @if(Auth::check())
                                 <li class="navbar-right"><a href="{{route('logout')}}">Cerrar Sesión</a></li>
