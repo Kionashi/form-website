@@ -13,7 +13,13 @@
 
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['namespace' => 'Frontend'],function () {
+    //testing
+    Route::get('/test','RequestController@goTest')->name('test');
+    Route::post('/testing','RequestController@processTest')->name('testing');
+});
 Auth::routes();
+
 Route::group(['namespace' => 'Backend','middleware' => ['web','isAdmin']],function () {
     
     Route::get('/administrador', 'HomeController@index')->name('admin');
@@ -32,9 +38,9 @@ Route::group(['namespace' => 'Backend','middleware' => ['web','isAdmin']],functi
     
     //Administrador de documentos
     Route::get('administrador/documentos','DocumentsController@index')->name('admin/documents');
-    Route::get('administrador/documentos/1','DocumentsController@demo1')->name('admin/documents/1');
-    Route::get('administrador/documentos/2','DocumentsController@demo2')->name('admin/documents/2');
-    Route::get('administrador/documentos/3','DocumentsController@demo3')->name('admin/documents/3');
+    Route::get('administrador/documentos/{id}/{parentId}','DocumentsController@folders')->name('admin/documents/');
+    Route::post('administrador/documentos/nueva-carpeta','DocumentsController@addFolder')->name('admin/documents/add-folder');
+    Route::post('administrador/documentos/nuevo-archivo','DocumentsController@addFile')->name('admin/documents/add-file');
     Route::get('administrador/documentos/descarga/{id}','DocumentsController@download')->name('admin/documents/download/');
     
     
@@ -87,19 +93,12 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web']],function
     Route::post('/consulta-placa/','RequestController@goPlateSearch')->name('plate-search/');
 });
 
-
-
-//INTERNAL
-Route::group(['namespace' => 'Frontend','middleware' => ['auth','web','excludeExternal']],function () {
+//EXCLUDE EXTERNAL AND INTERNAL
+Route::group(['namespace' => 'Frontend','middleware' => ['auth','web','excludeExternal','excludeInternal']],function () {
     
     //Datos Complementarios
     Route::get('/peticion/{serviceRequestId}/datos-complementarios','RequestController@goComplementaryData')->name('request/complementary-data/');
     Route::post('/peticion/{serviceRequestId}/datos-complementarios','RequestController@processComplementaryData')->name('request/complementary-data');
-    
-    //Regrabación
-    Route::get('/peticion/{serviceRequestId}/regrabacion','RequestController@goRecording')->name('request/recording/');
-    Route::post('/peticion/{serviceRequestId}/regrabacion','RequestController@processRecording')->name('request/recording');
-    
     
      //RTC
     Route::get('/peticion/{serviceRequestId}/rtc','RequestController@goRTC')->name('request/rtc/');
@@ -110,10 +109,20 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web','excludeEx
     Route::get('/peticion/{serviceRequestId}/inspection','RequestController@goInspection')->name('request/inspection/');
     Route::post('/peticion/{serviceRequestId}/inspection','RequestController@processInspection')->name('request/inspection');
     
+});
+
+//EXCLUDE EXTERNAL
+Route::group(['namespace' => 'Frontend','middleware' => ['auth','web','excludeExternal']],function () {
+    
+    //Regrabación
+    Route::get('/peticion/{serviceRequestId}/regrabacion','RequestController@goRecording')->name('request/recording/');
+    Route::post('/peticion/{serviceRequestId}/regrabacion','RequestController@processRecording')->name('request/recording');
+    
+    
+    
+    
    
-    //testing
-    Route::get('/test','RequestController@goTest')->name('test');
-    Route::post('/testing','RequestController@processTest')->name('testing');
+  
 });
 
 //CONTROL

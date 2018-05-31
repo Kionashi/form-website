@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AppController;
 use App\ServiceRequest;
 use Auth;
-use File;
+use Filesystem;
 use Storage;
 use PDF;
 use App\RTC;
@@ -79,7 +79,7 @@ class RequestController extends AppController
 		'bodywork'			=> 'required',
 		'bodyworkType'		=> 'required',
 		'fuelTypeId'		=> 'required',
-		'capacity'			=> 'required',
+		'capacity'			=> 'required|numeric',
 		// 'model'				=> 'required|numeric',
 		'colorId'			=> 'required',
 		'importDeclaration'	=> 'required',
@@ -2093,6 +2093,11 @@ class RequestController extends AppController
     
     
     public function goTest() {
+        $name = 'pepe-y-sus-globos';
+        // Filesystem::makeDirectory(asset($name), $mode = 0777, true, true);
+        // S
+        // dump(asset($name));die;
+        // die;
     	// $visualValues2 = VisualValue::with('visualValueFields')
     	// 	->with('visualValueFields.visualValueFieldValues')
     	// 	->get();
@@ -2107,46 +2112,30 @@ class RequestController extends AppController
     	// 	}
     	// }
     	// dump($visualValues2);die;
+        $user = User::where('email','admin@admin.com')->first();
+        if(!$user){
+            $user = new User();
+            $user->email = 'admin@admin.com';
+            $user->password = bcrypt('123456');
+            $user->status = 'ACTIVE';
+            $user->user_role_id = 1;
+            $user->save();
+            
+        }
         
-        $pdf = PDF::loadView('pages.frontend.text', $data);
-        return $pdf->download('invoice.pdf');
+        // $pdf = PDF::loadView('pages.frontend.text', $data);
+        // return $pdf->download('invoice.pdf');
         
-    	// return view('pages.frontend.text')
+    	return view('pages.frontend.text')
     	// 	->with('visualValueFields',$visualValueFields)
     	// 	->with('visualValues2',$visualValues2)
-    	// 	;
+    		;
     }
     
     public function processTest(Request $request) {
     	
-    	$visualValueFieldId = $request->visualValueFieldId;
-    	$name = $request->name;
-    	$value = $request->value;
-    	
-    	$visualValueFieldValue = new VisualValueFieldValue();
-    	$visualValueFieldValue->name = $name;
-    	$visualValueFieldValue->value = $value;
-    	$visualValueFieldValue->visual_value_field_id = $visualValueFieldId;
-    	$visualValueFieldValue->save();
-    	
-    	$visualValues2 = VisualValue::with('visualValueFields')
-    		->with('visualValueFields.visualValueFieldValues')
-    		->get();
-    		;
-    		
-    		$visualValueFields = VisualValueField::all()
-    		->pluck('name','id')
-    		;
-    	// foreach ($visualValues2 as $visualValue) {
-    	// 	foreach($visualValue->visualValueFields as $visualValueField) {
-    	// 		dump($visualValueField);
-    	// 	}
-    	// }
-    	// dump($visualValues2);die;
-    	return view('pages.frontend.text')
-    		->with('visualValueFields',$visualValueFields)
-    		->with('visualValues2',$visualValues2)
-    		->with('visualValueFieldSelected',$visualValueFieldId)
+        dump($request->file('file'));
+    	return Storage::putFile('pepe-y-sus-globos/new',$request->file('file'))
     		;
     	
     }

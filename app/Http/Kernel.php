@@ -61,5 +61,6 @@ class Kernel extends HttpKernel
         'isController' => \App\Http\Middleware\isController::class,
         'excludeExternal' => \App\Http\Middleware\excludeExternal::class,
         'excludeInspector' => \App\Http\Middleware\excludeInspector::class,
+        'excludeInternal' => \App\Http\Middleware\excludeInternal::class,
     ];
 }

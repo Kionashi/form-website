@@ -12,7 +12,7 @@
 			</div>
 		@endif -->
 		<fieldset>
-			{!!Form::open(array('files'=>true)) !!}
+			{!!Form::open(array('id' => 'inspectionForm','files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequest->id, array('id' => 'serviceRequestId'))!!}
 			{!!Form::hidden('fasecoldaCode',$fasecoldaCode,array('id' => 'fasecoldaCode'))!!}
 			{!!Form::hidden('fasecoldaValue',$fasecoldaValue,array('id' => 'fasecoldaValue'))!!}
@@ -154,8 +154,21 @@
 	{!!Html::script('/js/jquery.easyPaginate.js')!!}
 	<script type="text/javascript">
 		$(document).ready(function(){
+			var submitForm = true;
+			$('#inspectionForm').submit(function(e){
+				if (submitForm) {
+					console.log("SUBMIT");
+				} else {
+					e.preventDefault();
+					console.log("PREVENTED");
+				}
+			});
 			
 			$('#firstReference').change(function(){
+				
+				//Prevent the form to be submited
+				submitForm = false;
+				
 	            // Visual value id
 				var firstReference = $('#firstReference').val();
 				var serviceRequestId = $('#serviceRequestId').val();
@@ -190,6 +203,8 @@
 						console.log(e);
 					}
 				});
+				//Allow the form to be submited
+				submitForm = true;
             });
             
             $('#firstReference').trigger('change');
@@ -197,6 +212,10 @@
 			
 			//Update the fasecolda code and the fasecolda value
 			$('#secondReference').change(function(){
+				
+				//Prevent the form to be submited
+				submitForm = false;
+	            
 	            // Visual value id
 	            var firstReference = $('#firstReference').val();
 				var secondReference = $('#secondReference').val();
@@ -232,6 +251,9 @@
 						console.log(e);
 					}
 				});
+				
+				//Allow the form to be submited
+				submitForm = true;
             });
             
             $('#secondReference').trigger('change');

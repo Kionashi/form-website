@@ -13,7 +13,7 @@
 		@endif -->
 
 		<fieldset>
-			{!!Form::open(array('files'=>true)) !!}
+			{!!Form::open(array('id'=> 'basicDataForm', 'files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group">
@@ -111,7 +111,15 @@
 @section('custom_script')
 	<script type="text/javascript">
 		$(document).ready(function() {
-			
+			var submitForm = true;
+			$('#basicDataForm').submit(function(e){
+				if (submitForm) {
+					console.log("SUBMIT");
+				} else {
+					e.preventDefault();
+					console.log("PREVENTED");
+				}
+			});
 			$('#finalizationSoat').datetimepicker({
             	format:'YYYY-MM-DD'
             });
@@ -121,6 +129,8 @@
             });
             
             $('#brandId').change(function(){
+            	// Disable form to be submited
+            	submitForm = false;
 	            // Visual value id
 				var brandId = $('#brandId').val();
 				var getUrl = window.location;
@@ -142,7 +152,8 @@
 							
 						});
 							
-						
+						// Enable form to be submited
+            			submitForm = true;
 						// for each(var model in models) {
 						// // 	// Add label to value fields
 						// 	console.log(model);

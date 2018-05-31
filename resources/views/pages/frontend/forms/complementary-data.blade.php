@@ -12,7 +12,7 @@
 		    </div>
 		@endif -->
 		<fieldset>
-			{!!Form::open(array('files'=>true)) !!}
+			{!!Form::open(array('id' => 'complementaryDataForm', files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group">
@@ -69,7 +69,7 @@
 						</div>
 						<label class="col-md-3 hidden-lg hidden-md padding-top-1">Capacidad Kg/PSj</label>
 						<div class="col-md-3">
-							{!! Form::text('capacity',$complementaryData->capacity,['placeholder' => 'Capacidad Kg/PSj', 'class' =>'form-control']) !!}
+							{!! Form::number('capacity',$complementaryData->capacity,['placeholder' => 'Capacidad Kg/PSj', 'class' =>'form-control']) !!}
 							<div class="red">{{$errors->first('capacity')}}</div>
 						</div>
 						<label class="col-md-3 hidden-lg hidden-md padding-top-1">Modelo</label>
@@ -198,6 +198,16 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			
+			var submitForm = true;
+			$('#complementaryDataForm').submit(function(e){
+				if (submitForm) {
+					console.log("SUBMIT");
+				} else {
+					e.preventDefault();
+					console.log("PREVENTED");
+				}
+			});
+			
 			$('#importDate').datetimepicker({
             	format:'YYYY-MM-DD'
             });
@@ -208,6 +218,9 @@
             
             
             $('#cylinder').change(function(){
+            	
+            	//Disable the form to be submited
+            	submitForm = false;
             	
             	//get brand current value (brandId)
             	var cylinder = $('#cylinder').val();
@@ -283,6 +296,8 @@
 							
 							
 				});
+				//Enable the form to be submited
+            	submitForm = true;
 				
 	           
             });
@@ -290,6 +305,9 @@
             
             //when vehicleService changes update fuelTypes
              $('#vehicleService').change(function(){
+            	
+            	//Disable the form to be submited
+            	submitForm = false;
             	
             	//Get model current value
 				var model = $('#model').val();
@@ -330,7 +348,8 @@
 						console.log(e);
 					}
 				});
-	           
+	           //Enable the form to be submited
+            	submitForm = true;
             });
             $('#vehicleService').trigger('change');
 							
