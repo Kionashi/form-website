@@ -12,7 +12,7 @@
 		    </div>
 		@endif -->
 		<fieldset>
-			{!!Form::open(array('id' => 'complementaryDataForm', files'=>true)) !!}
+			{!!Form::open(array('id' => 'complementaryDataForm', 'files'=>true)) !!}
 			{!!Form::hidden('serviceRequestId',$serviceRequestId)!!}
 				<!-- <legend>Datos Personales</legend> -->
 				<div class="form-group">

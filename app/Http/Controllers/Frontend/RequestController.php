@@ -452,6 +452,7 @@ class RequestController extends AppController
     		;
     }
     
+    //Load View Recording
     public function goRecording ($serviceRequestId) {
     	// Find service request
     	$serviceRequest = ServiceRequest::with('recording')
@@ -460,9 +461,13 @@ class RequestController extends AppController
     		->with('recording')
     		->find($serviceRequestId)
     		;
-    	$complementaryData = $serviceRequest->complementaryData;
+    		
     	$basicData = $serviceRequest->basicData;
+    	$complementaryData = $serviceRequest->complementaryData;
     	$recording = $serviceRequest->recording;
+    	
+    	//This view needs the complementaryData to be correctly loaded, but it should be able to load without that info and allow to fill that info in the view, so this flag will keep track how the view should behave
+    	$hasComplementaryData = false;
     	
     	if(! $recording) {
     		$recording = new Recording();
@@ -486,22 +491,31 @@ class RequestController extends AppController
             })
     		->pluck('name','id')
     		;
-    	$fasecoldaYearValues = FasecoldaYearValue::where('year',$basicData->model)
-    		->with('fasecolda')
-    		->whereHas('fasecolda',function($query) use ($basicData,$complementaryData){
-    			$query->where('brand_id',$basicData->brand_id)
-    				->where('cylinder_id',$complementaryData->cylinder_id)
-    				->where('vehicle_service_id',$complementaryData->service_id)
-					->where('fuel_type_id',$complementaryData->fuel_type_id)
-					;
-    		})
-    		->get()
-    		;
-    	$vehicleClasses = array();
-    	foreach($fasecoldaYearValues as $fasecoldaYearValue){
-    		$vehicleClass = VehicleClass::find($fasecoldaYearValue->fasecolda->vehicle_class_id);
-    		$vehicleClasses[$vehicleClass->id] = $vehicleClass->name;
-    	};
+    	
+	    //vehicleClasses default value
+	    $vehicleClasses = array();
+	    
+    	//If complementaryData was already filled
+    	if($complementaryData) {
+    		
+    		$hasComplementaryData = true;
+    		
+	    	$fasecoldaYearValues = FasecoldaYearValue::where('year',$basicData->model)
+	    		->with('fasecolda')
+	    		->whereHas('fasecolda',function($query) use ($basicData,$complementaryData){
+	    			$query->where('brand_id',$basicData->brand_id)
+	    				->where('cylinder_id',$complementaryData->cylinder_id)
+	    				->where('vehicle_service_id',$complementaryData->service_id)
+						->where('fuel_type_id',$complementaryData->fuel_type_id)
+						;
+	    		})
+	    		->get()
+	    		;
+	    	foreach($fasecoldaYearValues as $fasecoldaYearValue){
+	    		$vehicleClass = VehicleClass::find($fasecoldaYearValue->fasecolda->vehicle_class_id);
+	    		$vehicleClasses[$vehicleClass->id] = $vehicleClass->name;
+	    	};
+    	}
     	
     	
     	// $cylinders = Cylinder::all()
@@ -523,6 +537,7 @@ class RequestController extends AppController
     		->with('complementaryData',$complementaryData)
     		->with('recording',$recording)
     		->with('basicData',$basicData)
+    		->with('hasComplementaryData',$hasComplementaryData)
     		;
     }
     
