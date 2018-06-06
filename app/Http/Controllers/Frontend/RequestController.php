@@ -494,7 +494,9 @@ class RequestController extends AppController
     	
 	    //vehicleClasses default value
 	    $vehicleClasses = array();
-	    
+	    $fuelTypes = array();
+        $cylinders = array();
+        $services = array();
     	//If complementaryData was already filled
     	if($complementaryData) {
     		
@@ -515,7 +517,39 @@ class RequestController extends AppController
 	    		$vehicleClass = VehicleClass::find($fasecoldaYearValue->fasecolda->vehicle_class_id);
 	    		$vehicleClasses[$vehicleClass->id] = $vehicleClass->name;
 	    	};
-    	}
+    	}else{ 
+            //Setting the vehicle classes as an empty array since it will be getting the information using ajax calls in the view
+            $vehicleClasses = array();
+            
+            //getting all fasecoldas with the brand in the basic data 
+            $brandId = $basicData->brand_id;
+            $fasecoldaYearValues = FasecoldaYearValue::with('fasecolda.vehicleService')
+            ->whereHas('fasecolda',function($query) use ($brandId){
+                $query->where('brand_id',$brandId)
+                    ;
+            })
+            ->orderBy('year','desc')
+            ->get()
+            ;
+
+            
+            foreach($fasecoldaYearValues as $fasecoldaYearValue){
+                $models[$fasecoldaYearValue->year] = $fasecoldaYearValue->year;
+                $services[$fasecoldaYearValue->fasecolda->vehicleService->id] = $fasecoldaYearValue->fasecolda->vehicleService->name;
+            };
+            
+            foreach($fasecoldaYearValues as $fasecoldaYearValue){
+                $cylinder = Cylinder::find($fasecoldaYearValue->fasecolda->cylinder_id);
+                $cylinders[$cylinder->id] = $cylinder->name;
+            };
+            
+            
+            //Getting FuelTypes
+            foreach($fasecoldaYearValues as $fasecoldaYearValue){
+                $fuelType = FuelType::find($fasecoldaYearValue->fasecolda->fuel_type_id);
+                $fuelTypes[$fuelType->id] = $fuelType->name;
+            };
+        }
     	
     	
     	// $cylinders = Cylinder::all()
@@ -537,6 +571,9 @@ class RequestController extends AppController
     		->with('complementaryData',$complementaryData)
     		->with('recording',$recording)
     		->with('basicData',$basicData)
+            ->with('services',$services)
+            ->with('fuelTypes',$fuelTypes)
+            ->with('cylinders',$cylinders)
     		->with('hasComplementaryData',$hasComplementaryData)
     		;
     }
@@ -1207,7 +1244,7 @@ class RequestController extends AppController
     }
     
     public function processRecording(Request $request) {
-    	
+    	 
     	$this->validate($request, $this->recordingValidationRules, $this->validationMessages);
     	
     	$serviceRequestId = $request->input('serviceRequestId');
@@ -1229,7 +1266,11 @@ class RequestController extends AppController
     	$description = $request->input('description');
     	$notes = $request->input('notes');
     	$inspectorId = $request->input('inspectorId');
-    	    	
+        $hasComplementaryData = $request->input('hasComplementaryData');
+        $cylinderId = $request->cylinderId;
+        $vehicleServiceId = $request->vehicleServiceId;
+        $fuelTypeId = $request->fuelTypeId;
+
     	$serviceRequest = ServiceRequest::with('complementaryData')
     		->with('basicData')
     		->with('recording')
@@ -1249,14 +1290,31 @@ class RequestController extends AppController
     	$basicData->model = $model;
     	$basicData->plate = $plate;
     	$basicData->save();
-    	
-    	$complementaryData->line = $line;
-    	$complementaryData->bodywork_type = $bodyworkType;
-    	$complementaryData->color_id = $colorId;
-    	$complementaryData->engine_number = $engineNumber;
-    	$complementaryData->serial_number = $serialNumber;
-    	$complementaryData->chassis_number = $chassisNumber;
-    	$complementaryData->save();
+    	if(!$hasComplementaryData){
+            $complementaryData = new ComplementaryData();
+            $complementaryData->turn = 'por definir';
+            $complementaryData->bodywork = 'por definir';
+            $complementaryData->import_declaration = 'por definir';
+            $complementaryData->import_date = now();
+            $complementaryData->plate_date = now();
+            $complementaryData->observation = 'por definir';
+            $complementaryData->headquarters = 'por definir';
+            $complementaryData->requested_by = 'por definir';
+            $complementaryData->insured = 'por definir';
+            $complementaryData->intermediary = 'por definir';
+            $complementaryData->capacity = 0;
+        }
+            $complementaryData->line = $line;
+            $complementaryData->bodywork_type = $bodyworkType;
+            $complementaryData->cylinder_id = $cylinderId;
+            $complementaryData->fuel_type_id = $fuelTypeId;
+            $complementaryData->service_id = $vehicleServiceId;
+            $complementaryData->color_id = $colorId;
+            $complementaryData->engine_number = $engineNumber;
+            $complementaryData->serial_number = $serialNumber;
+            $complementaryData->chassis_number = $chassisNumber;
+            $complementaryData->save();
+
 		
     	$recording->re_recorded_part = $reRecordedPart;
     	$recording->review_city = $reviewCity;
@@ -1268,7 +1326,7 @@ class RequestController extends AppController
     	$recording->inspector_id = $inspectorId;
     	$recording->save();
     	
-    	
+    	$serviceRequest->complementary_data_id = $complementaryData->id;
     	$serviceRequest->recording_id = $recording->id;
 		$serviceRequest->last_step = 3;
 		$serviceRequest->save();
@@ -1950,8 +2008,31 @@ class RequestController extends AppController
         
         return $uniqueServices;
     }
+
+    public function getvehicleClasses($model,$brandId,$cylinderId,$serviceId,$fuelTypeId) {
+
+        $vehicleClasses = array();
+        $fasecoldaYearValues = FasecoldaYearValue::where('year',$model)
+                ->with('fasecolda')
+                ->whereHas('fasecolda',function($query) use ($brandId,$cylinderId, $serviceId,$fuelTypeId){
+                    $query->where('brand_id',$brandId)
+                        ->where('cylinder_id',$cylinderId)
+                        ->where('vehicle_service_id',$serviceId)
+                        ->where('fuel_type_id',$fuelTypeId)
+                        ;
+                })
+                ->get()
+                ;
+            foreach($fasecoldaYearValues as $fasecoldaYearValue){
+                $vehicleClass = VehicleClass::find($fasecoldaYearValue->fasecolda->vehicle_class_id);
+                $vehicleClasses[] = "<option value="."\"".$vehicleClass->id."\"".">".$vehicleClass->name."</option>";
+            }
+
+            return $vehicleClasses;
+    }
     
     public function getModels($brandId) {
+
     	$fasecoldaYearValues = FasecoldaYearValue::with('fasecolda')
     		->whereHas('fasecolda',function($query) use ($brandId){
     			$query->where('brand_id',$brandId)

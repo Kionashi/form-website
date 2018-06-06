@@ -42,12 +42,12 @@
 				</div>
 				<div class="col-md-2 col-lg-2 col-xs-2 col-sm-2 padding-top-1">
 					@if($serviceRequest->service->id == 1)
-						@if($serviceRequest->complementary_data_id)
+						@if($serviceRequest->complementary_data_id || $serviceRequest->basic_data_id)
 							<h2><a href="{{route('request/recording/',$serviceRequest->id)}}"><i class="fa fa-check-square-o" aria-hidden="true"></i></a></h2>
 						@endif
-						@if(!$serviceRequest->complementary_data_id)
+						<!-- @if(!$serviceRequest->complementary_data_id || !$serviceRequest->basic_data_id)
 							<h2><i class="fa fa-square-o" aria-hidden="true"></i></h2>
-						@endif
+						@endif -->
 					@else 
 						<h2><i class="fa fa-square-o" aria-hidden="true"></i></h2>
 					@endif

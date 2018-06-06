@@ -84,6 +84,7 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web']],function
      Route::get('/peticion/servicio/placa/{plate}','RequestController@getServices')->name('request/get-services/');
      Route::get('/peticion/referencia/{firstReference}/solicitud/{serviceRequestId}','RequestController@getReferences')->name('request/get-references/');
      Route::get('/peticion/fasecolda/referencia1/{firstReference}/referencia2/{secondReference}/solicitud/{serviceRequestId}','RequestController@getFasecolda')->name('request/get-fasecolda/');
+     Route::get('/peticion/clases/modelo/{model}/marca/{brandId}/cilindraje/{cylinderId}/servicio/{serviceId}/combustible/{fuelType}','RequestController@getvehicleClasses')->name('request/get-vehicle-classes/');
     //Servicios Actuales
     Route::get('/servicios-actuales/','HomeController@index')->name('current-services');
     Route::post('/servicios-actuales/','RequestController@goCurrentServices')->name('current-services/');

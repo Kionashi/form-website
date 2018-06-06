@@ -135,7 +135,7 @@
 				var brandId = $('#brandId').val();
 				var getUrl = window.location;
 				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
-				var requestUrl = baseUrl + "/modelos/"+brandId;
+				var requestUrl = baseUrl + "/peticion/modelos/"+brandId;
 				console.log(requestUrl);
 				
 	            // Get visual value fields
