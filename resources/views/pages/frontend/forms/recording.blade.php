@@ -220,15 +220,13 @@
             $('#plateDate').datetimepicker({
             	format:'YYYY-MM-DD'
             });
-             
-            $('#cylinder').change(function(){
-            	//Disable the form to be submited
-            	submitForm = false;
-            	
+            
+            function changeService() {
             	//get brand current value (brandId)
             	var cylinder = $('#cylinder').val();
             	var model = $('#model').val();
             	var brand = $('#brand').val();
+            	
             	//build base url
 				var getUrl = window.location;
 				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
@@ -242,73 +240,25 @@
 					type: "GET",
 					url: requestUrl,
 					success: function(vehicleServices) {
+
 						// Clear model fields container
 						$('#vehicleService').empty();
 					
 						//for each model append a new option in the select
 						vehicleServices.forEach(function(vehicleService){
 							$('#vehicleService').append(vehicleService);
-							
-						});
-						
-						 //Get model current value
-						var model = $('#model').val();
-						
-						//get brand current value (brandId)
-		            	var brand = $('#brand').val();
-		            	
-		            	 //Get vehicleService current value
-						var vehicleService = $('#vehicleService').val();
-						
-						 //Get cylinders current value
-						var cylinder = $('#cylinder').val();
-		            	
-						//build new request url
-						var requestUrl = baseUrl + "/peticion/combustible/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder+"/servicio/"+vehicleService;
-						console.log(requestUrl);
-						
-			            // Make the request
-						$.ajax({
-							type: "GET",
-							url: requestUrl,
-							success: function(fuelTypes) {
-								// Clear cylinder fields container
-								$('#fuelType').empty();
-						
-								//for each model append a new option in the select
-								fuelTypes.forEach(function(fuelType){
-									$('#fuelType').append(fuelType);
-									
-								});
-								
-							},
-							error: function(e) {
-								console.log('error');
-								console.log(e);
-							}
-						});
-									
-							},
-							error: function(e) {
-								console.log('error');
-								console.log(e);
-							}
-							
-							
+						});	
+
+						changeFuelTypes();							
+					},
+					error: function(e) {
+						console.log('error');
+						console.log(e);
+					}		
 				});
-				//Enable the form to be submited
-            	submitForm = true;
-				
-	           
-            });
-            $('#cylinder').trigger('change');
-            
-            //when vehicleService changes update fuelTypes
-             $('#vehicleService').change(function(){
-            	
-            	//Disable the form to be submited
-            	submitForm = false;
-            	
+            }
+            function changeFuelTypes() {
+
             	//Get model current value
 				var model = $('#model').val();
 				
@@ -324,11 +274,11 @@
             	//build base url
 				var getUrl = window.location;
 				var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
-				
+		
 				//build new request url
 				var requestUrl = baseUrl + "/peticion/combustible/modelo/"+model+"/marca/"+brand+"/cilindraje/"+cylinder+"/servicio/"+vehicleService;
 				console.log(requestUrl);
-            	
+				
 	            // Make the request
 				$.ajax({
 					type: "GET",
@@ -336,11 +286,13 @@
 					success: function(fuelTypes) {
 						// Clear cylinder fields container
 						$('#fuelType').empty();
+				
 						//for each model append a new option in the select
 						fuelTypes.forEach(function(fuelType){
 							$('#fuelType').append(fuelType);
 							
 						});
+						changeClass();
 						
 					},
 					error: function(e) {
@@ -348,20 +300,9 @@
 						console.log(e);
 					}
 				});
-	           //Enable the form to be submited
-            	submitForm = true;
+            }
 
-            	//Trigger itself so new changes to vehicleClass can be applied
-            	$('#fuelType').trigger('change');
-            });
-            $('#vehicleService').trigger('change');
-			
-			//when fuelType changes update vehicleClass
-             $('#fuelType').change(function(){
-            	
-            	//Disable the form to be submited
-            	submitForm = false;
-            	
+            function changeClass() {
             	//Get model current value
 				var model = $('#model').val();
 				
@@ -390,6 +331,7 @@
 					type: "GET",
 					url: requestUrl,
 					success: function(vehicleClasses) {
+
 						// Clear vehicle classes container
 						$('#vehicleClass').empty();
 
@@ -405,11 +347,50 @@
 						console.log(e);
 					}
 				});
+            }
+
+            //If the cylinder changes, it triggers a function to update the service wich triggers a function to update the fueltypes wich triggers a function to update the classes
+            $('#cylinder').change(function(){
+
+            	//Disable the form to be submited
+            	submitForm = false;
+            	
+            	changeService();
+
+				//Enable the form to be submited
+            	submitForm = true;
+				
+            });
+
+            //Triggering the initial change so all the selects in the form are consistent.
+            $('#cylinder').trigger('change');
+            
+            //If the vehicleService changes, it triggers a function to update the fueltypes wich triggers a function to update the classes
+             $('#vehicleService').change(function(){
+            	
+            	//Disable the form to be submited
+            	submitForm = false;
+            	
+            	changeFuelTypes();
+
+	           //Enable the form to be submited
+            	submitForm = true;
+
+            });
+			
+			//when fuelType changes update vehicleClass
+             $('#fuelType').change(function(){
+            	
+            	//Disable the form to be submited
+            	submitForm = false;
+            	
+            	changeClass();
+
 	           //Enable the form to be submited
             	submitForm = true;
             });
-            $('#fuelType').trigger('change');
            
         });
     </script>
 @stop  
+
