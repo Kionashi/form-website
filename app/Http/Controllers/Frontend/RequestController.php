@@ -1054,6 +1054,9 @@ class RequestController extends AppController
     	//Validation
     	$this->validate($request, $this->basicDataValidationRules, $this->validationMessages);
     	
+        //Getting current user
+        $user = Auth::user();
+
     	//Getting the data from the forms
     	$plate = $request->input('plate');
     	$firstName = $request->input('firstName');
@@ -1080,7 +1083,6 @@ class RequestController extends AppController
 	    	$basicData = new BasicData();
 		}
 		
-    	
     	$basicData->plate = $plate;
     	$basicData->first_name = $firstName;
     	$basicData->last_name = $lastName;
@@ -1110,11 +1112,16 @@ class RequestController extends AppController
     		$basicData->data_privacy = $path;
     		$basicData->save();
     	}
-	    	
-    	
 		
 		$serviceRequest->basic_data_id = $basicData->id;
-		$serviceRequest->last_step = 1;
+
+        //If user role is not ADMIN and the service request is a Recording I must skip the Complementary Data step 
+        if($serviceRequest->service->name == 'Regrabación' && !$user->role->name == 'ADMIN') {
+
+            $serviceRequest->last_step = 2;
+        }else{
+            $serviceRequest->last_step = 1;
+        }
 		$serviceRequest->save();
     	return $this->goNextStep($serviceRequest);
         
@@ -1978,13 +1985,21 @@ class RequestController extends AppController
     
     public function getServices($plate){
         
-        
-        $serviceRequests = ServiceRequest::with('basicData')
-            ->get()
-            ;
-            $services = array();
-        // dump($serviceRequests);die;
+        $user = Auth::user();
+        //If the user is external I must search only for request associated with the user
+        if($user->role->name == 'EXTERNAL') {
+            $serviceRequests = ServiceRequest::with('basicData')
+                ->where('user_id',$user->id)
+                ->get()
+                ;
+        }else{
+            $serviceRequests = ServiceRequest::with('basicData')
+                ->get()
+                ;
+        }
+        $services = array();
         $servicesId = array();
+
         foreach($serviceRequests as $serviceRequest) {
             if($serviceRequest->basicData) {
                 if($serviceRequest->basicData->plate == $plate)

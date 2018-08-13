@@ -18,7 +18,7 @@ class isController
          $user = Auth::user();
         // dump($user);die;
         if($user){
-            if($user->role->name == 'CONTROLLER'){
+            if($user->role->name == 'CONTROLLER' || $user->role->name == 'ADMIN'){
                 return $next($request);
             }else{
                 return redirect()->route('/');

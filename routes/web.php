@@ -66,6 +66,10 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web']],function
     Route::get('/peticion/{serviceRequestId}/datos-basicos','RequestController@goBasicData')->name('request/basic-data/');
     Route::post('/peticion/{serviceRequestId}/datos-basicos','RequestController@processBasicData')->name('request/basic-data');
     
+    //Regrabación
+    Route::get('/peticion/{serviceRequestId}/regrabacion','RequestController@goRecording')->name('request/recording/');
+    Route::post('/peticion/{serviceRequestId}/regrabacion','RequestController@processRecording')->name('request/recording');
+
     //Imprimir
     Route::get('/peticion/{serviceRequestId}/imprimir','RequestController@goPrint')->name('request/print/');
     
@@ -118,11 +122,7 @@ Route::group(['namespace' => 'Frontend','middleware' => ['auth','web','excludeEx
     //Regrabación
     Route::get('/peticion/{serviceRequestId}/regrabacion','RequestController@goRecording')->name('request/recording/');
     Route::post('/peticion/{serviceRequestId}/regrabacion','RequestController@processRecording')->name('request/recording');
-    
-    
-    
-    
-   
+
   
 });
 
